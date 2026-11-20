@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <title>OpenCrusade</title>
+  <rect width="512" height="512" rx="104" fill="#0b1220"/>
+  <g fill="none" stroke-width="46" stroke-linecap="round">
+    <path d="M416.7 206.9A168 168 0 1 0 416.7 305.1" stroke="#f1f4f9"/>
+    <path d="M318.2 193.8A88 88 0 1 0 318.2 318.2" stroke="#5b8cff"/>
+  </g>
+</svg>

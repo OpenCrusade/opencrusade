@@ -1,0 +1,79 @@
+# Dependencies and build output
+node_modules
+dist
+dist-ssr
+*.tsbuildinfo
+
+# Environment and secrets. Only .env.example is committed.
+.env
+.env.*
+!.env.example
+*.local
+*.local.*
+*.pem
+*.key
+*.crt
+*.cer
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+*.token
+*secret*
+*credential*
+client_secret*.json
+service-account*.json
+*.bak
+*.backup*
+*.orig
+*.swp
+*~
+
+# Test output. tests/e2e/.auth holds real Google session tokens.
+tests/e2e/.auth/
+tests/e2e/report/
+playwright-report/
+test-results/
+blob-report/
+coverage/
+
+# Generated data
+public/data/
+
+# Local agent and tool settings, notes and private material
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.md
+GEMINI.md
+.cursor/
+.cursorrules
+.aider*
+/.specify/
+/specs/
+/notes/
+/private/
+/brand/
+*.private.*
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editor and OS files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

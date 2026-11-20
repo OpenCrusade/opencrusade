@@ -1,0 +1,19 @@
+{
+  "format": "crusade-ledger-tracker",
+  "version": 1,
+  "name": "Example tracker set",
+  "trackers": [
+    { "name": "Campaign points", "type": "number" },
+    { "name": "Campaign stage", "type": "stages", "stages": ["Scouting", "Assault", "Occupation"] },
+    {
+      "name": "Upgrades earned",
+      "type": "list",
+      "entries": [
+        { "name": "Example upgrade", "detail": "Write what it does here, in your own words." }
+      ]
+    },
+    { "name": "Leader chosen", "type": "checkbox" },
+    { "name": "Current objective", "type": "text" }
+  ],
+  "notes": "Types are: number, stages, list, checklist, checkbox, text. A list can come with entries, and stages with their names. Everything else starts empty."
+}

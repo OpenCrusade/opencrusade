@@ -1,0 +1,76 @@
+name: Deploy to GitHub Pages
+
+# Builds the app and publishes it with GitHub Pages.
+#
+# One-time set-up in the repository:
+#   1. Settings > Pages > Source: "GitHub Actions". Add your custom domain there.
+#   2. Settings > Secrets and variables > Actions > Variables: add
+#      VITE_GOOGLE_CLIENT_ID, VITE_GOOGLE_API_KEY and VITE_GOOGLE_APP_ID
+#      (and, if you use them, VITE_CONTACT_URL, VITE_REPO_URL,
+#      VITE_GOOGLE_ACCESS, VITE_BASE_PATH).
+#
+# These are variables, not secrets: every one of them is built into the
+# public site. The app has no secret. Until VITE_GOOGLE_CLIENT_ID is set
+# (for example in a fresh fork) this workflow does nothing.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: ${{ vars.VITE_GOOGLE_CLIENT_ID != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx vitest run
+      - run: npm run build
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.VITE_GOOGLE_CLIENT_ID }}
+          VITE_GOOGLE_API_KEY: ${{ vars.VITE_GOOGLE_API_KEY }}
+          VITE_GOOGLE_APP_ID: ${{ vars.VITE_GOOGLE_APP_ID }}
+          VITE_GOOGLE_ACCESS: ${{ vars.VITE_GOOGLE_ACCESS }}
+          VITE_CONTACT_URL: ${{ vars.VITE_CONTACT_URL }}
+          VITE_REPO_URL: ${{ vars.VITE_REPO_URL }}
+          VITE_BASE_PATH: ${{ vars.VITE_BASE_PATH }}
+      # Pages has no single-page fallback. Serving the app as the "not
+      # found" page makes campaign links open.
+      - run: cp dist/index.html dist/404.html
+      # The public pages get real files, so they answer with a normal
+      # "found" status. Google checks the privacy and terms addresses.
+      - run: |
+          for p in privacy terms about faq; do
+            mkdir -p "dist/$p"
+            cp dist/index.html "dist/$p/index.html"
+          done
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # Only this job may publish. The build job, which runs npm, cannot.
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
