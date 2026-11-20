@@ -26,6 +26,7 @@ import {
 } from "@/hooks/useCrusade";
 import { CrusadeSettingsDialog } from "@/components/crusade/CrusadeSettingsDialog";
 import { PackPanel } from "@/components/crusade/PackPanel";
+import { PanelPlacementMenu } from "@/components/crusade/PanelPlacement";
 import { useGmManage } from "@/stores/gm-manage";
 import {
   useAttachRoster,
@@ -139,6 +140,31 @@ export function CrusadePage() {
     />
   );
 
+  // The GM's Campaign tracker card can move the same way.
+  const trackerPlacement = crusade.settings.trackerPlacement ?? "side";
+  const campaignTracker = (isGm || !trackerEmpty) && (
+    <Card
+      title="Campaign tracker"
+      action={
+        isGm && (
+          <PanelPlacementMenu
+            name="Campaign tracker"
+            value={trackerPlacement}
+            onChange={(next) => updateConfigMutation.mutate({ settings: { trackerPlacement: next } })}
+          />
+        )
+      }
+    >
+      <PackPanel
+        packState={tracker}
+        isGm={isGm}
+        onUpdateState={(next) => updatePackStateMutation.mutate(next)}
+        isSaving={updatePackStateMutation.isPending}
+        wide={trackerPlacement !== "side"}
+      />
+    </Card>
+  );
+
   return (
     <div className="page pt-5 pb-9 flex flex-col gap-4" style={teamStyle(colour)}>
       <section
@@ -233,6 +259,7 @@ export function CrusadePage() {
 
       <div className="flex flex-wrap gap-4 items-start">
         <div className="flex-[999_1_600px] min-w-0 flex flex-col gap-4">
+          {trackerPlacement === "above" && campaignTracker}
           {totalsPlacement === "above" && totals}
           <MapCard crusade={crusade} isGm={isGm} />
 
@@ -400,6 +427,7 @@ export function CrusadePage() {
             )}
           </Card>
 
+          {trackerPlacement === "below" && campaignTracker}
           {totalsPlacement === "below" && totals}
         </div>
 
@@ -493,16 +521,7 @@ export function CrusadePage() {
             )}
           </Card>
 
-          {(isGm || !trackerEmpty) && (
-            <Card title="Campaign tracker">
-              <PackPanel
-                packState={tracker}
-                isGm={isGm}
-                onUpdateState={(next) => updatePackStateMutation.mutate(next)}
-                isSaving={updatePackStateMutation.isPending}
-              />
-            </Card>
-          )}
+          {trackerPlacement === "side" && campaignTracker}
 
           {totalsPlacement === "side" && totals}
 

@@ -26,6 +26,8 @@ export const crusadeSettingsSchema = z.object({
    * the main column.
    */
   totalsPlacement: z.enum(["side", "above", "below"]).optional(),
+  /** Where the GM's Campaign tracker card shows. Default: the side. */
+  trackerPlacement: z.enum(["side", "above", "below"]).optional(),
 });
 
 /**

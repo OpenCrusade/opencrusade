@@ -149,6 +149,8 @@ The app shrinks the picture to fit and saves it in the sheet. Press **Replace ma
 
 The **Campaign tracker** card holds trackers for the whole campaign: things you count or note down, named by you. Everyone can read it. Only you can change it.
 
+The card starts in the side column. To move it, press **Manage campaign** and use the menu in the card's heading: **Shown at the side**, **Shown at the top** or **Shown at the bottom**. At the top or bottom the trackers sit side by side; press **Edit trackers** to see the full card with its notes and import.
+
 1. If the card already has trackers, press **Edit trackers**.
 2. Under **Track something new**, type a name.
 3. Choose a type: **Number**, **List**, **Stages**, **Checklist**, **Checkbox** or **Text**.
