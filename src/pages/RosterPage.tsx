@@ -245,6 +245,11 @@ export function RosterPage() {
                     ? `${roster.player.displayName}'s force`
                     : `${roster.player.displayName}'s force, read-only`}
               </span>
+              {row && row.played > 0 && (
+                <span data-testid="force-record">
+                  Won {row.w}, drawn {row.d}, lost {row.l}
+                </span>
+              )}
               {row && <FormChips results={row.results} last={5} onBanner />}
             </div>
           </div>
