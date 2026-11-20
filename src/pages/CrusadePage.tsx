@@ -122,6 +122,23 @@ export function CrusadePage() {
   const trackerEmpty =
     tracker.counters.length === 0 && tracker.items.length === 0 && !tracker.note;
 
+  // Where Campaign totals shows is the GM's choice, like tracker
+  // positions on a force. The side column is the default.
+  const totalsPlacement = crusade.settings.totalsPlacement ?? "side";
+  const totals = (
+    <CampaignTotals
+      crusade={crusade}
+      attached={attached}
+      me={user?.googleId}
+      placement={totalsPlacement}
+      onPlace={
+        isGm
+          ? (next) => updateConfigMutation.mutate({ settings: { totalsPlacement: next } })
+          : undefined
+      }
+    />
+  );
+
   return (
     <div className="page pt-5 pb-9 flex flex-col gap-4" style={teamStyle(colour)}>
       <section
@@ -216,6 +233,7 @@ export function CrusadePage() {
 
       <div className="flex flex-wrap gap-4 items-start">
         <div className="flex-[999_1_600px] min-w-0 flex flex-col gap-4">
+          {totalsPlacement === "above" && totals}
           <MapCard crusade={crusade} isGm={isGm} />
 
           <Card title="Forces" label="Forces" flush>
@@ -381,6 +399,8 @@ export function CrusadePage() {
               </div>
             )}
           </Card>
+
+          {totalsPlacement === "below" && totals}
         </div>
 
         <div className="flex-[1_1_340px] min-w-0 flex flex-col gap-4">
@@ -484,7 +504,7 @@ export function CrusadePage() {
             </Card>
           )}
 
-          <CampaignTotals crusade={crusade} attached={attached} me={user?.googleId} />
+          {totalsPlacement === "side" && totals}
 
           {isGm && <TrackerSetsCard crusade={crusade} />}
 

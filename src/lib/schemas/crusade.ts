@@ -20,6 +20,12 @@ export const playerGroupSchema = z.object({
 
 export const crusadeSettingsSchema = z.object({
   allowPlayerBattleCreation: z.boolean().default(true),
+  /**
+   * Where the Campaign totals panel shows on the campaign page: in the
+   * side column (the default), or full width at the top or bottom of
+   * the main column.
+   */
+  totalsPlacement: z.enum(["side", "above", "below"]).optional(),
 });
 
 /**
