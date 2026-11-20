@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applySets, blankValue, mergeTrackerEdit, readTrackerState } from "@/components/common/tracker-state";
+import { applySets, blankValue, dropWithdrawn, mergeTrackerEdit, readTrackerState } from "@/components/common/tracker-state";
 
 describe("tracker state", () => {
   it("turns the retired faction panel's data into ordinary trackers", () => {
@@ -33,6 +33,38 @@ describe("tracker state", () => {
       stages: ["One", "Two"],
       current: 0,
     });
+  });
+
+  it("drops a tracker the GM took out of a set, and nothing else", () => {
+    const set = {
+      id: "s1",
+      note: "",
+      items: [
+        { id: "a", name: "Tally", kind: "counter" as const, value: 0 },
+        { id: "b", name: "Phase", kind: "counter" as const, value: 0 },
+      ],
+    };
+    const mine = { items: [{ id: "x", name: "Mine", kind: "counter" as const, value: 4 }], note: "n" };
+    const have = applySets(mine, [], [set])!.state;
+    have.items[1].value = 9;
+
+    // Nothing has been taken out yet.
+    expect(dropWithdrawn(have, [set])).toBeNull();
+
+    // The GM removes "Phase": it goes, the rest keep their values.
+    const smaller = { ...set, items: [set.items[0]] };
+    const after = dropWithdrawn(have, [smaller])!;
+    expect(after.items.map((i) => [i.name, i.value])).toEqual([["Mine", 4], ["Tally", 9]]);
+    expect(after.note).toBe("n");
+    // And it is not handed back.
+    expect(applySets(after, ["s1"], [smaller])).toBeNull();
+
+    // A set this app simply doesn't know about leaves the trackers alone.
+    expect(dropWithdrawn(have, [])).toBeNull();
+
+    // A set the GM removed whole takes all of its trackers with it.
+    const cleared = dropWithdrawn(have, [], ["s1"])!;
+    expect(cleared.items.map((i) => [i.name, i.value])).toEqual([["Mine", 4]]);
   });
 
   it("adds a GM set once, and later only what the GM added to it", () => {

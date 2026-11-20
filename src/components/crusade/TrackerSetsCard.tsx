@@ -29,6 +29,33 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
   const [looking, setLooking] = useState(false);
   const [found, setFound] = useState<{ sets: FoundSet[]; skipped: number } | null>(null);
   const [chosen, setChosen] = useState<Record<string, CrusadeTrackerSet["scope"]>>({});
+  /** The set whose trackers are listed for editing. */
+  const [openSet, setOpenSet] = useState<string | null>(null);
+
+  const removeTracker = (set: CrusadeTrackerSet, itemId: string, itemName: string) => {
+    const last = set.items.length === 1;
+    const effect =
+      set.scope === "everyone"
+        ? "It disappears from every player's force, with whatever they have recorded in it, the next time they open their force."
+        : "Players who already added it keep it.";
+    const question = last
+      ? `"${itemName}" is the last tracker in "${set.name}", so this removes the whole set. ${effect}`
+      : `Remove "${itemName}" from "${set.name}"? ${effect}`;
+    if (!window.confirm(question)) return;
+    save.mutate(
+      last
+        ? sets.filter((x) => x.id !== set.id)
+        : sets.map((x) =>
+            x.id === set.id
+              ? {
+                  ...x,
+                  items: x.items.filter((i) => i.id !== itemId),
+                  updatedAt: new Date().toISOString(),
+                }
+              : x,
+          ),
+    );
+  };
 
   const add = async (load: () => Promise<TrackerLayout>, fallbackName: string) => {
     setMessage(null);
@@ -114,32 +141,68 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
       {sets.length > 0 && (
         <ul className="grid grid-cols-[minmax(0,1fr)] list-none m-0 p-0" data-testid="tracker-set-list">
           {sets.map((s) => (
-            <li
-              key={s.id}
-              className="flex items-center justify-between gap-3 min-h-[52px] py-1.5 border-t border-rule"
-            >
-              <span className="flex flex-col gap-px min-w-0">
-                <span className="font-semibold truncate">{s.name}</span>
-                <span className="text-xs text-mute">
-                  {s.scope === "everyone" ? "Every player" : "Players choose"} · {s.items.length}{" "}
-                  tracker{s.items.length === 1 ? "" : "s"}
+            <li key={s.id} className="border-t border-rule">
+              <div className="flex items-center justify-between gap-3 min-h-[52px] py-1.5">
+                <span className="flex flex-col gap-px min-w-0">
+                  <span className="font-semibold truncate">{s.name}</span>
+                  <span className="text-xs text-mute">
+                    {s.scope === "everyone" ? "Every player" : "Players choose"} · {s.items.length}{" "}
+                    tracker{s.items.length === 1 ? "" : "s"}
+                  </span>
                 </span>
-              </span>
-              <button
-                type="button"
-                className="btn-link text-bad"
-                disabled={save.isPending}
-                onClick={() => {
-                  if (
-                    window.confirm(
-                      `Remove "${s.name}"? Players who already have its trackers keep them.`,
-                    )
-                  )
-                    save.mutate(sets.filter((x) => x.id !== s.id));
-                }}
-              >
-                Remove
-              </button>
+                <span className="flex flex-none gap-3">
+                  <button
+                    type="button"
+                    className="btn-link"
+                    aria-expanded={openSet === s.id}
+                    onClick={() => setOpenSet(openSet === s.id ? null : s.id)}
+                  >
+                    {openSet === s.id ? "Done" : "Edit"}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn-link text-bad"
+                    disabled={save.isPending}
+                    onClick={() => {
+                      if (
+                        window.confirm(
+                          s.scope === "everyone"
+                            ? `Remove "${s.name}"? Its trackers disappear from every player's force, with whatever they have recorded in them, the next time they open their force.`
+                            : `Remove "${s.name}"? Players who already added its trackers keep them.`,
+                        )
+                      )
+                        save.mutate(sets.filter((x) => x.id !== s.id));
+                    }}
+                  >
+                    Remove set
+                  </button>
+                </span>
+              </div>
+              {openSet === s.id && (
+                <ul
+                  className="list-none m-0 mb-2.5 p-0 inset-panel px-3.5"
+                  aria-label={`Trackers in ${s.name}`}
+                  data-testid="tracker-set-items"
+                >
+                  {s.items.map((i, n) => (
+                    <li
+                      key={i.id}
+                      className={`flex items-center justify-between gap-3 min-h-11 ${n > 0 ? "border-t border-rule" : ""}`}
+                    >
+                      <span className="truncate">{i.name}</span>
+                      <button
+                        type="button"
+                        className="btn-link text-bad flex-none"
+                        disabled={save.isPending}
+                        aria-label={`Remove ${i.name}`}
+                        onClick={() => removeTracker(s, i.id, i.name)}
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
