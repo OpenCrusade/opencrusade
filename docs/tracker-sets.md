@@ -53,6 +53,8 @@ A campaign holds at most 40 sets.
 
 When an **Every player** set contains a number tracker, the campaign page shows a **Campaign totals** card. It adds that number up across all forces, and across each team if you have set teams up. A force that has not received the tracker yet shows **Not set up**.
 
+The card starts in the side column. To move it, press **Manage campaign** and use the menu in the card's heading: **Shown at the side**, **Shown at the top** or **Shown at the bottom**. At the top or bottom it is full width, with the trackers side by side. Everyone in the campaign sees it where you put it.
+
 ## Use a set as a player
 
 **A set your GM gave to every player** appears in your trackers by itself the next time you open your force page. In set-up mode it is marked `From your GM, so it can't be removed.`

@@ -8,14 +8,22 @@ import type { AttachedRoster, Crusade } from "@/types";
  * number tracker added up across forces and teams. The numbers
  * themselves live on each player's force.
  */
+export type TotalsPlacement = "side" | "above" | "below";
+
 export function CampaignTotals({
   crusade,
   attached,
   me,
+  placement,
+  onPlace,
 }: {
   crusade: Crusade;
   attached: AttachedRoster[];
   me: string | undefined;
+  /** Where the panel is being shown. Wide when not at the side. */
+  placement: TotalsPlacement;
+  /** Given to the GM while managing: lets them move the panel. */
+  onPlace?: (next: TotalsPlacement) => void;
 }) {
   const counters = (crusade.trackerSets ?? [])
     .filter((s) => s.scope === "everyone")
@@ -34,8 +42,31 @@ export function CampaignTotals({
   const teamOf = new Map(crusade.players.map((p) => [p.user.googleId, p.groupId]));
 
   return (
-    <Card title="Campaign totals" label="Campaign totals">
-      <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
+    <Card
+      title="Campaign totals"
+      label="Campaign totals"
+      action={
+        onPlace && (
+          <select
+            value={placement}
+            onChange={(e) => onPlace(e.target.value as TotalsPlacement)}
+            aria-label="Where Campaign totals shows"
+            className="bg-transparent border-0 text-xs text-mute underline cursor-pointer min-w-0 max-w-full"
+          >
+            <option value="side">Shown at the side</option>
+            <option value="above">Shown at the top</option>
+            <option value="below">Shown at the bottom</option>
+          </select>
+        )
+      }
+    >
+      <div
+        className={
+          placement === "side"
+            ? "flex flex-col gap-3"
+            : "grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3"
+        }
+      >
       {counters.map((c) => {
         const rows = states
           .map((s) => {
