@@ -59,8 +59,12 @@ describe("tracker state", () => {
     // And it is not handed back.
     expect(applySets(after, ["s1"], [smaller])).toBeNull();
 
-    // A set that is gone altogether leaves the player's trackers alone.
+    // A set this app simply doesn't know about leaves the trackers alone.
     expect(dropWithdrawn(have, [])).toBeNull();
+
+    // A set the GM removed whole takes all of its trackers with it.
+    const cleared = dropWithdrawn(have, [], ["s1"])!;
+    expect(cleared.items.map((i) => [i.name, i.value])).toEqual([["Mine", 4]]);
   });
 
   it("adds a GM set once, and later only what the GM added to it", () => {

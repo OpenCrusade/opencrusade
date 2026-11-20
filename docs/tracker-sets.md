@@ -48,7 +48,12 @@ Each set in the list shows **Every player** or **Players choose** and how many t
 
 Removing the last tracker removes the set.
 
-**Remove a whole set.** Press **Remove set** beside it. Players who already have its trackers keep them, and can then remove them from their own force.
+**Remove a whole set.** Press **Remove set** beside it.
+
+- An **Every player** set: all of its trackers disappear from every player's force the next time they open it, along with whatever they had recorded.
+- A **Players choose** set: players who already added its trackers keep them, and can remove them from their own force.
+
+Removing from an **Every player** set cannot be undone. Adding the same file again gives everyone fresh, empty trackers.
 
 **Download an example** on the same card gives you a sample file to copy from.
 

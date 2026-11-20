@@ -39,7 +39,7 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
         ? "It disappears from every player's force, with whatever they have recorded in it, the next time they open their force."
         : "Players who already added it keep it.";
     const question = last
-      ? `"${itemName}" is the last tracker in "${set.name}", so this removes the whole set. Players who already have it keep it. Continue?`
+      ? `"${itemName}" is the last tracker in "${set.name}", so this removes the whole set. ${effect}`
       : `Remove "${itemName}" from "${set.name}"? ${effect}`;
     if (!window.confirm(question)) return;
     save.mutate(
@@ -166,7 +166,9 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
                     onClick={() => {
                       if (
                         window.confirm(
-                          `Remove "${s.name}"? Players who already have its trackers keep them.`,
+                          s.scope === "everyone"
+                            ? `Remove "${s.name}"? Its trackers disappear from every player's force, with whatever they have recorded in them, the next time they open their force.`
+                            : `Remove "${s.name}"? Players who already added its trackers keep them.`,
                         )
                       )
                         save.mutate(sets.filter((x) => x.id !== s.id));

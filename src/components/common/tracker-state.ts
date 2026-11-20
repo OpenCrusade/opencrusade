@@ -195,18 +195,26 @@ export function applySets(
 }
 
 /**
- * Drop the trackers a GM has since taken out of a set that every
- * player gets. Trackers from a set that no longer exists at all are
- * left alone (removing a whole set lets players keep what they have).
- * Returns null when there is nothing to drop.
+ * Drop what the GM has removed from the sets every player gets: single
+ * trackers taken out of a set that still exists, and every tracker of
+ * a set the GM removed whole (`withdrawn` holds those sets' ids).
+ * Anything else is left alone, including trackers from a set that is
+ * simply unknown here. Returns null when there is nothing to drop.
  */
-export function dropWithdrawn(state: TrackerState, sets: AppliableSet[]): TrackerState | null {
+export function dropWithdrawn(
+  state: TrackerState,
+  sets: AppliableSet[],
+  withdrawn: string[] = [],
+): TrackerState | null {
   const live = new Map(
     sets.map((s) => [s.id, new Set(s.items.map((i) => `${s.id}:${i.id}`))]),
   );
+  const gone = new Set(withdrawn);
   const items = state.items.filter((i) => {
     if (!i.setRef) return true;
-    const refs = live.get(i.setRef.split(":")[0]);
+    const setId = i.setRef.split(":")[0];
+    if (gone.has(setId)) return false;
+    const refs = live.get(setId);
     return !refs || refs.has(i.setRef);
   });
   return items.length === state.items.length ? null : { ...state, items };

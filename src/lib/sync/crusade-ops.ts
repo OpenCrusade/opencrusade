@@ -502,7 +502,20 @@ export async function setTrackerSets(
   crusadeId: string,
   trackerSets: Crusade["trackerSets"],
 ): Promise<Crusade> {
-  return mutateCrusade(crusadeId, (live) => ({ ...live, trackerSets }));
+  return mutateCrusade(crusadeId, (live) => {
+    // An every-player set that has gone is remembered, so each
+    // player's app knows to drop its trackers (see dropWithdrawn).
+    const kept = new Set(trackerSets.map((s) => s.id));
+    const gone = live.trackerSets
+      .filter((s) => s.scope === "everyone" && !kept.has(s.id))
+      .map((s) => s.id);
+    const withdrawnSets = [...new Set([...(live.withdrawnSets ?? []), ...gone])].slice(-200);
+    return {
+      ...live,
+      trackerSets,
+      ...(withdrawnSets.length > 0 ? { withdrawnSets } : {}),
+    };
+  });
 }
 
 /** GM sets, replaces or (with null) removes the campaign map. */

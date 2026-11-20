@@ -342,6 +342,11 @@ export const crusadeSchema = z.object({
   packState: packStateSchema.default({ counters: [], items: [], note: "" }),
   map: crusadeMapSchema.optional(),
   trackerSets: z.array(crusadeTrackerSetSchema).max(40).default([]),
+  /**
+   * Ids of "everyone" sets the GM has removed. Each player's app drops
+   * that set's trackers from their force when it next opens it.
+   */
+  withdrawnSets: z.array(z.string().max(100)).max(200).optional(),
   phases: z.array(crusadePhaseSchema).max(40).default([]),
 });
 

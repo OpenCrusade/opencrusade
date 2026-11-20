@@ -64,7 +64,9 @@ export function GenericFactionPanel({
   // player's own app sets their trackers up.
   const { user } = useAuth();
   const mine = user?.googleId === roster.player.googleId;
-  const trimmed = mine ? dropWithdrawn(state, campaignSets) : null;
+  const trimmed = mine
+    ? dropWithdrawn(state, campaignSets, crusade?.withdrawnSets ?? [])
+    : null;
   const added = mine ? applySets(trimmed ?? state, appliedSetIds, campaignSets) : null;
   const pending = added ?? (trimmed ? { state: trimmed, appliedSetIds } : null);
   const pendingKey = pending
