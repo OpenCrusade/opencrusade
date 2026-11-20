@@ -41,7 +41,14 @@ After adding, the app tells you what happens next:
 
 Each set in the list shows **Every player** or **Players choose** and how many trackers it holds.
 
-**Remove a set.** Press **Remove** beside it. Players who already have its trackers keep them.
+**Remove one tracker from a set.** Press **Edit** beside the set, then **Remove** beside the tracker you do not want. Press **Done** when you have finished.
+
+- In an **Every player** set, the tracker disappears from every player's force the next time they open it, along with whatever they had recorded in it. It also leaves **Campaign totals**.
+- In a **Players choose** set, players who already added it keep it. It is no longer offered to anyone else.
+
+Removing the last tracker removes the set.
+
+**Remove a whole set.** Press **Remove set** beside it. Players who already have its trackers keep them, and can then remove them from their own force.
 
 **Download an example** on the same card gives you a sample file to copy from.
 

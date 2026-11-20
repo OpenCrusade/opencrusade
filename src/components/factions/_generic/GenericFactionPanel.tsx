@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { TrackerPanel } from "@/components/common/TrackerPanel";
 import {
   applySets,
+  dropWithdrawn,
   blankValue,
   readTrackerState,
   type AppliableSet,
@@ -40,9 +41,7 @@ export function GenericFactionPanel({
   const unlocked = useTrackerEdit((e) => e.editing);
   const setUp = isOwner && (unlocked || state.items.length === 0);
 
-  const applyAndSave = (sets: AppliableSet[]) => {
-    const result = applySets(state, appliedSetIds, sets);
-    if (!result) return;
+  const saveSets = (result: { state: TrackerState; appliedSetIds: string[] }) =>
     onUpdateState({
       ...roster.factionState,
       items: result.state.items,
@@ -52,22 +51,30 @@ export function GenericFactionPanel({
       awakeningPoints: undefined,
       systems: undefined,
     });
+  const applyAndSave = (sets: AppliableSet[]) => {
+    const result = applySets(state, appliedSetIds, sets);
+    if (result) saveSets(result);
   };
 
   // The GM's campaign sets go to every player: add whatever this
-  // player doesn't have yet. Only the owner's app can write their tab.
+  // player doesn't have yet, and drop whatever the GM has since taken
+  // out of a set. Only the owner's app can write their tab.
   const campaignSets = allSets.filter((s) => s.scope === "everyone") as AppliableSet[];
   // `isOwner` here also covers a GM correcting this force; only the
   // player's own app sets their trackers up.
   const { user } = useAuth();
   const mine = user?.googleId === roster.player.googleId;
-  const pending = mine ? applySets(state, appliedSetIds, campaignSets) : null;
-  const pendingKey = pending ? JSON.stringify(pending.appliedSetIds) + pending.state.items.length : "";
+  const trimmed = mine ? dropWithdrawn(state, campaignSets) : null;
+  const added = mine ? applySets(trimmed ?? state, appliedSetIds, campaignSets) : null;
+  const pending = added ?? (trimmed ? { state: trimmed, appliedSetIds } : null);
+  const pendingKey = pending
+    ? JSON.stringify(pending.appliedSetIds) + pending.state.items.map((i) => i.id).join(",")
+    : "";
   const lastApplied = useRef("");
   useEffect(() => {
-    if (!pendingKey || isSaving || lastApplied.current === pendingKey) return;
+    if (!pending || isSaving || lastApplied.current === pendingKey) return;
     lastApplied.current = pendingKey;
-    applyAndSave(campaignSets);
+    saveSets(pending);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingKey, isSaving]);
 

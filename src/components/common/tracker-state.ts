@@ -194,6 +194,24 @@ export function applySets(
   };
 }
 
+/**
+ * Drop the trackers a GM has since taken out of a set that every
+ * player gets. Trackers from a set that no longer exists at all are
+ * left alone (removing a whole set lets players keep what they have).
+ * Returns null when there is nothing to drop.
+ */
+export function dropWithdrawn(state: TrackerState, sets: AppliableSet[]): TrackerState | null {
+  const live = new Map(
+    sets.map((s) => [s.id, new Set(s.items.map((i) => `${s.id}:${i.id}`))]),
+  );
+  const items = state.items.filter((i) => {
+    if (!i.setRef) return true;
+    const refs = live.get(i.setRef.split(":")[0]);
+    return !refs || refs.has(i.setRef);
+  });
+  return items.length === state.items.length ? null : { ...state, items };
+}
+
 /** Merge a panel's trackers back into a roster's stored state. */
 export function writeTrackerState(
   raw: Record<string, unknown> | undefined,
