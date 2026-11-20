@@ -155,7 +155,7 @@ Under **This force**, press **Edit faction** to change the faction name and pick
    - **Notes**: optional.
 3. Press **Enroll unit**.
 
-The banner at the top shows your **Supply**: points used, your limit, and how many are free or over.
+The banner at the top shows your **Supply**: points used, your limit, and how many are free or over. It also shows where your force stands in the campaign and its record, for example "Won 3, drawn 1, lost 2", counted from battles every player has confirmed. You never need a tracker for wins.
 
 ### Read the squad list
 
