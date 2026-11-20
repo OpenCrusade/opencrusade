@@ -277,10 +277,16 @@ export function TrackerPanel({
         style={{
           // At most `cols` across, fewer when there isn't room.
           gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, max(220px, calc((100% - ${(cols - 1) * 12}px) / ${cols}))), 1fr))`,
+          // Short tiles fill the space beside a tall one.
+          gridAutoFlow: "row dense",
         }}
       >
         {shown.map((item) => (
-          <li key={item.id} className={`inset-panel p-4 ${dragClass(item)}`} {...dragProps(item)}>
+          <li
+            key={item.id}
+            className={`inset-panel p-4 ${tall(item) ? "row-span-2" : ""} ${dragClass(item)}`}
+            {...dragProps(item)}
+          >
             <TrackerItemControl
               item={item}
               canEdit={canEdit} editing={editing}
@@ -474,6 +480,15 @@ export function TrackerPanel({
       </div>
     </div>
   );
+}
+
+/**
+ * A tracker that is a list of things (a checklist or a list) takes two
+ * rows when shown as tiles, so two short trackers such as numbers can
+ * stack beside it instead of leaving a gap.
+ */
+function tall(item: TrackerItem): boolean {
+  return item.kind === "checklist" || item.kind === "list";
 }
 
 /** Switches every tracker panel between locked and set-up mode. */
