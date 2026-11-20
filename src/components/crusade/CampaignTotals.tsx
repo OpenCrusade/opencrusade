@@ -8,7 +8,9 @@ import type { AttachedRoster, Crusade } from "@/types";
  * number tracker added up across forces and teams. The numbers
  * themselves live on each player's force.
  */
-export type TotalsPlacement = "side" | "above" | "below";
+import { PanelPlacementMenu, type PanelPlacement } from "@/components/crusade/PanelPlacement";
+
+export type TotalsPlacement = PanelPlacement;
 
 export function CampaignTotals({
   crusade,
@@ -47,16 +49,7 @@ export function CampaignTotals({
       label="Campaign totals"
       action={
         onPlace && (
-          <select
-            value={placement}
-            onChange={(e) => onPlace(e.target.value as TotalsPlacement)}
-            aria-label="Where Campaign totals shows"
-            className="bg-transparent border-0 text-xs text-mute underline cursor-pointer min-w-0 max-w-full"
-          >
-            <option value="side">Shown at the side</option>
-            <option value="above">Shown at the top</option>
-            <option value="below">Shown at the bottom</option>
-          </select>
+          <PanelPlacementMenu name="Campaign totals" value={placement} onChange={onPlace} />
         )
       }
     >
