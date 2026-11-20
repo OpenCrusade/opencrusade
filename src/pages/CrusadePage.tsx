@@ -381,6 +381,8 @@ export function CrusadePage() {
               </div>
             )}
           </Card>
+
+          <CampaignTotals crusade={crusade} attached={attached} me={user?.googleId} />
         </div>
 
         <div className="flex-[1_1_340px] min-w-0 flex flex-col gap-4">
@@ -483,8 +485,6 @@ export function CrusadePage() {
               />
             </Card>
           )}
-
-          <CampaignTotals crusade={crusade} attached={attached} me={user?.googleId} />
 
           {isGm && <TrackerSetsCard crusade={crusade} />}
 

@@ -35,6 +35,7 @@ export function CampaignTotals({
 
   return (
     <Card title="Campaign totals" label="Campaign totals">
+      <div className="grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3">
       {counters.map((c) => {
         const rows = states
           .map((s) => {
@@ -103,6 +104,7 @@ export function CampaignTotals({
           </section>
         );
       })}
+      </div>
     </Card>
   );
 }
