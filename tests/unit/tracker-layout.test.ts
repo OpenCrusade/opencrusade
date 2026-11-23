@@ -107,4 +107,63 @@ describe("tracker sets", () => {
     expect(again.items[0]).toMatchObject({ value: 0, lifetime: 0 });
     expect(again.items[1].lifetime).toBeUndefined();
   });
+
+  it("downloads a set that reads back the same, every field included", () => {
+    const full = {
+      format: "crusade-ledger-tracker",
+      version: 1,
+      name: "Everything",
+      audience: "everyone",
+      columns: 3,
+      trackers: [
+        { name: "Points", type: "number", lifetime: true, placement: "side" },
+        { name: "Phase", type: "stages", stages: ["One", "Two"], placement: "above" },
+        { name: "Unlocks", type: "list", entries: [{ name: "First", detail: "Does a thing" }, { name: "Second" }] },
+        { name: "Chosen", type: "checkbox", placement: "below" },
+        { name: "Target", type: "text" },
+        { name: "Badges", type: "checklist", options: [{ name: "A", detail: "Cost 5" }, { name: "B" }] },
+      ],
+      notes: "How it works.",
+    };
+    const strip = (l: ReturnType<typeof parseTrackerLayout>) => ({
+      ...l,
+      items: l.items.map(({ id: _id, ...rest }) => {
+        void _id;
+        const v = rest.value as unknown;
+        const value = Array.isArray(v)
+          ? v.map(({ id: _e, ...e }: { id: string }) => (void _e, e))
+          : v && typeof v === "object" && "options" in v
+            ? { options: (v as { options: { id: string }[] }).options.map(({ id: _o, ...o }) => (void _o, o)) }
+            : v;
+        return { ...rest, value };
+      }),
+    });
+    const first = parseTrackerLayout(JSON.stringify(full));
+    const text = exportTrackerLayout(first, first.name, { audience: first.audience });
+    const second = parseTrackerLayout(text);
+    expect(strip(second)).toEqual(strip(first));
+    expect(second.audience).toBe("everyone");
+    expect(second.items.every((i) => i.columns === 3)).toBe(true);
+    expect(second.items[0].lifetime).toBe(0);
+    // A second round changes nothing at all.
+    expect(exportTrackerLayout(second, second.name, { audience: second.audience })).toBe(text);
+  });
+
+  it("hands on starting values only when asked", () => {
+    const l = parseTrackerLayout(
+      JSON.stringify({
+        format: "crusade-ledger-tracker",
+        version: 1,
+        trackers: [
+          { name: "Points", type: "number", value: 3 },
+          { name: "Chosen", type: "checkbox", value: true },
+          { name: "Target", type: "text", value: "North" },
+        ],
+      }),
+    );
+    const shared = JSON.parse(exportTrackerLayout(l, "S"));
+    expect(shared.trackers.map((t: { value?: unknown }) => t.value)).toEqual([undefined, undefined, undefined]);
+    const built = JSON.parse(exportTrackerLayout(l, "S", { startValues: true }));
+    expect(built.trackers.map((t: { value?: unknown }) => t.value)).toEqual([3, true, "North"]);
+  });
 });

@@ -86,7 +86,7 @@ The card starts in the side column. To move it, press **Manage campaign** and us
 
 On a force page this link box takes a link to one file only. Looking up a whole repository is on the GM's card.
 
-**Share your own layout.** In the same section, press **Download this set**. The file keeps the tracker names, stages, list entries and notes. It leaves out your numbers and progress.
+**Share your own layout.** In the same section, press **Download this set**. The file keeps the tracker names, stages, list entries, option descriptions, where each tracker shows, the number of columns, running totals and notes. It leaves out your numbers and progress.
 
 **Copy another player's layout.** If you have no trackers yet and another force in the campaign does, you are offered **Copy another player's layout**. It copies the tracker names and types, starting from zero. Their values and notes are not copied.
 

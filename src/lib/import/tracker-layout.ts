@@ -159,24 +159,50 @@ export function parseTrackerLayout(text: string): TrackerLayout {
   };
 }
 
+export interface ExportOptions {
+  /** Who a GM would usually give the set to. */
+  audience?: "everyone" | "choice";
+  /**
+   * Keep each number, checkbox and text tracker's current value as its
+   * starting value. Off when sharing a panel someone has been using, so
+   * their progress isn't handed on; on in the set builder.
+   */
+  startValues?: boolean;
+}
+
 /**
- * Write a panel out as a tracker set to share. Structure, list
- * entries and notes are kept; progress (numbers, ticks, the current
- * stage, text values) is reset.
+ * Write trackers out as a tracker set to share. Structure, list
+ * entries, option descriptions, positions, columns, running totals and
+ * notes are kept. Progress (numbers, ticks, the current stage, text
+ * values) is reset unless `startValues` asks to keep it.
  */
-export function exportTrackerLayout(state: TrackerState, name: string): string {
+export function exportTrackerLayout(
+  state: TrackerState,
+  name: string,
+  options: ExportOptions = {},
+): string {
+  const columns = state.items.find((i) => i.columns)?.columns;
   return JSON.stringify(
     {
       format: TRACKER_FORMAT,
       version: 1,
       name,
-      ...(state.items.find((i) => i.columns) ? { columns: state.items.find((i) => i.columns)!.columns } : {}),
+      ...(options.audience ? { audience: options.audience } : {}),
+      ...(columns ? { columns } : {}),
       trackers: state.items.map((i) => {
+        const start =
+          options.startValues &&
+          ((i.kind === "counter" && typeof i.value === "number" && i.value !== 0) ||
+            (i.kind === "toggle" && i.value === true) ||
+            (i.kind === "text" && typeof i.value === "string" && i.value !== ""))
+            ? { value: i.value as number | boolean | string }
+            : {};
         const base = {
           name: i.name,
           type: KIND_TO_TYPE[i.kind],
           ...(i.placement && i.placement !== "side" ? { placement: i.placement } : {}),
           ...(typeof i.lifetime === "number" ? { lifetime: true } : {}),
+          ...start,
         };
         if (i.value && typeof i.value === "object" && !Array.isArray(i.value)) {
           if (i.kind === "stage" && "stages" in i.value) return { ...base, stages: i.value.stages };
