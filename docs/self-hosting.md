@@ -148,7 +148,7 @@ With a custom domain, leave `VITE_BASE_PATH` unset. Without one, a project site 
 GitHub Pages has limits you should know about:
 
 - **Pages ignores `_headers` and `_redirects`.** The response headers in `public/_headers` are not sent. The app's Content-Security-Policy still applies, because it is built into the page, and the app refuses to run inside another site's frame.
-- **Campaign links are answered with a "not found" status.** Pages has no single-page fallback, so the workflow copies the app to `404.html`. Browsers show the app normally, but link previews and some tools treat a campaign's address as missing. The workflow gives `/privacy`, `/terms`, `/about` and `/faq` real files, so those answer normally; Google checks the privacy and terms addresses.
+- **Campaign links are answered with a "not found" status.** Pages has no single-page fallback, so the workflow copies the app to `404.html`. Browsers show the app normally, but link previews and some tools treat a campaign's address as missing. The workflow gives `/privacy`, `/terms`, `/about`, `/faq` and `/tracker-sets/new` real files, so those answer normally; Google checks the privacy and terms addresses.
 - **Without a custom domain, a project site shares its origin.** `name.github.io/your-repo/` has the same origin as every other Pages site of that account, so those sites could read the app's storage. Use a custom domain.
 
 ### Any other static host
