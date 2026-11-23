@@ -473,6 +473,52 @@
   }
 }
 
+/* ---------- Google's file chooser ----------
+ * Google's chooser (src/lib/google/picker.ts) brings its layout as an
+ * inline <style> block, which the production Content-Security-Policy
+ * blocks. Without it the chooser has no position or stacking order and
+ * ends up behind the app's own dialogs (issue #7). These are the same
+ * rules, served from the app's own stylesheet, which the policy allows.
+ * The dev server has no policy, so this only shows in a built copy.
+ */
+.picker-dialog-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  z-index: 1000;
+}
+.picker-dialog {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #acacac;
+  width: auto;
+  /* Google sizes it a couple of pixels wider than a phone screen. */
+  max-width: 100vw;
+  box-sizing: border-box;
+  padding: 0;
+  z-index: 1001;
+  overflow: auto;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
+}
+.picker-dialog-content {
+  height: 100%;
+  font-size: 0;
+  padding: 0;
+}
+.picker-dialog-buttons,
+.picker-dialog-title {
+  display: none;
+}
+.picker-dialog-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
+}
+
 /* ---------- A quiet aside: how something works ---------- */
 @utility note {
   background: var(--color-inset);
