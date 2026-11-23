@@ -312,7 +312,11 @@ const GROUPS: { id: string; title: string; questions: Question[] }[] = [
             Yes. The <Guide file="gm-guide.md">GM guide</Guide> covers creating
             a campaign, sharing it, managing players and correcting mistakes.{" "}
             <Guide file="tracker-sets.md">Tracker sets</Guide> explains
-            ready-made campaign trackers.
+            ready-made campaign trackers, and the{" "}
+            <Link className="underline" to="/tracker-sets/new">
+              tracker set builder
+            </Link>{" "}
+            makes one without signing in.
           </>
         ),
       },

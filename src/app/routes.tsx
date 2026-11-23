@@ -39,6 +39,7 @@ export const router = createBrowserRouter(
       children: [
         { path: "/", element: <HomePage /> },
         { path: "/faq", element: page(() => import("@/pages/FaqPage"), "FaqPage") },
+        { path: "/tracker-sets/new", element: page(() => import("@/pages/TrackerSetBuilderPage"), "TrackerSetBuilderPage") },
         { path: "/about", element: legal("about") },
         { path: "/privacy", element: legal("privacy") },
         { path: "/terms", element: legal("terms") },
