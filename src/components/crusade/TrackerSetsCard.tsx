@@ -1,9 +1,10 @@
+import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { Card, Seg } from "@/components/ui/kit";
 import { useSetTrackerSets } from "@/hooks/useCrusade";
 import {
   fetchTrackerLayout,
-  readTrackerLayoutFile,
+  readTrackerLayoutFiles,
   type TrackerLayout,
 } from "@/lib/import/tracker-layout";
 import { findGithubSets, parseGithubUrl, type FoundSet } from "@/lib/import/github-sets";
@@ -80,6 +81,43 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
           ? `Added "${set.name}". Each player gets it the next time they open their force.`
           : `Added "${set.name}". Players can now choose it on their force page.`,
       );
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : String(err));
+    }
+  };
+
+  /** Add several set files at once, each as its own set, in one save. */
+  const addFiles = async (files: File[]) => {
+    setMessage(null);
+    try {
+      const { sets: read, problems } = await readTrackerLayoutFiles(files);
+      const usable = read.filter((l) => l.items.length > 0);
+      for (const l of read.filter((x) => x.items.length === 0)) {
+        problems.push(`${l.fallbackName}: it has no trackers in it.`);
+      }
+      const room = Math.max(0, 40 - sets.length);
+      if (usable.length > room) {
+        problems.push(`A campaign holds at most 40 sets, so ${usable.length - room} were left out.`);
+      }
+      const now = new Date().toISOString();
+      const added: CrusadeTrackerSet[] = usable.slice(0, room).map((l) => ({
+        id: crypto.randomUUID(),
+        name: (l.name || l.fallbackName).slice(0, 200),
+        scope,
+        items: l.items as CrusadeTrackerSet["items"],
+        note: l.note,
+        updatedAt: now,
+      }));
+      if (added.length > 0) await save.mutateAsync([...sets, ...added]);
+      const names = added.map((s) => `"${s.name}"`).join(", ");
+      const done =
+        added.length === 0
+          ? ""
+          : `Added ${added.length === 1 ? names : `${added.length} sets: ${names}`}. ` +
+            (scope === "everyone"
+              ? "Each player gets them the next time they open their force."
+              : "Players can now choose them on their force page.");
+      setMessage([done, ...problems].filter(Boolean).join(" "));
     } catch (err) {
       setMessage(err instanceof Error ? err.message : String(err));
     }
@@ -190,6 +228,31 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
                       className={`flex items-center justify-between gap-3 min-h-11 ${n > 0 ? "border-t border-rule" : ""}`}
                     >
                       <span className="truncate">{i.name}</span>
+                      {s.scope === "everyone" && i.kind === "counter" && (
+                        <label className="ml-auto flex items-center gap-2 text-xs text-mute cursor-pointer flex-none">
+                          <input
+                            type="checkbox"
+                            checked={i.totals !== false}
+                            disabled={save.isPending}
+                            onChange={(e) =>
+                              save.mutate(
+                                sets.map((x) =>
+                                  x.id === s.id
+                                    ? {
+                                        ...x,
+                                        items: x.items.map((y) =>
+                                          y.id === i.id ? { ...y, totals: e.target.checked ? undefined : false } : y,
+                                        ),
+                                        updatedAt: new Date().toISOString(),
+                                      }
+                                    : x,
+                                ),
+                              )
+                            }
+                          />
+                          In Campaign totals
+                        </label>
+                      )}
                       <button
                         type="button"
                         className="btn-link text-bad flex-none"
@@ -225,11 +288,12 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
           accept=".json,application/json"
           className="sr-only"
           data-testid="crusade-set-file"
-          aria-label="Tracker set file"
+          aria-label="Tracker set files"
+          multiple
           onChange={(e) => {
-            const f = e.target.files?.[0];
+            const files = [...(e.target.files ?? [])];
             e.target.value = "";
-            if (f) void add(() => readTrackerLayoutFile(f), f.name.replace(/\.json$/i, ""));
+            if (files.length > 0) void addFiles(files);
           }}
         />
         <div className="flex flex-wrap gap-2">
@@ -239,11 +303,14 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
             disabled={save.isPending}
             onClick={() => file.current?.click()}
           >
-            {save.isPending ? "Saving…" : "Add from a file"}
+            {save.isPending ? "Saving…" : "Add from files"}
           </button>
           <a href={`${import.meta.env.BASE_URL}example-tracker-set.json`} download className="btn-link">
             Download an example
           </a>
+          <Link to="/tracker-sets/new" className="btn-link">
+            Build a set
+          </Link>
         </div>
         <div className="flex gap-2">
           <input

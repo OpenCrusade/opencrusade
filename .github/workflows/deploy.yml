@@ -50,10 +50,11 @@ jobs:
       # Pages has no single-page fallback. Serving the app as the "not
       # found" page makes campaign links open.
       - run: cp dist/index.html dist/404.html
-      # The public pages get real files, so they answer with a normal
-      # "found" status. Google checks the privacy and terms addresses.
+      # The public pages and the tracker set builder get real files, so
+      # they answer with a normal "found" status. Google checks the privacy
+      # and terms addresses, and people share the builder's address.
       - run: |
-          for p in privacy terms about faq; do
+          for p in privacy terms about faq tracker-sets/new; do
             mkdir -p "dist/$p"
             cp dist/index.html "dist/$p/index.html"
           done

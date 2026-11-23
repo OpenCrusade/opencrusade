@@ -18,6 +18,8 @@ export function CampaignTotals({
   me,
   placement,
   onPlace,
+  columns = 3,
+  onColumns,
 }: {
   crusade: Crusade;
   attached: AttachedRoster[];
@@ -26,12 +28,16 @@ export function CampaignTotals({
   placement: TotalsPlacement;
   /** Given to the GM while managing: lets them move the panel. */
   onPlace?: (next: TotalsPlacement) => void;
+  /** Trackers side by side when full width (1 to 4). */
+  columns?: number;
+  /** Given to the GM while managing: lets them change the columns. */
+  onColumns?: (next: number) => void;
 }) {
   const counters = (crusade.trackerSets ?? [])
     .filter((s) => s.scope === "everyone")
     .flatMap((s) =>
       s.items
-        .filter((i) => i.kind === "counter")
+        .filter((i) => i.kind === "counter" && i.totals !== false)
         .map((i) => ({ ref: `${s.id}:${i.id}`, name: i.name })),
     );
   if (counters.length === 0 || attached.length === 0) return null;
@@ -49,15 +55,35 @@ export function CampaignTotals({
       label="Campaign totals"
       action={
         onPlace && (
-          <PanelPlacementMenu name="Campaign totals" value={placement} onChange={onPlace} />
+          <span className="flex flex-wrap items-center gap-x-3 justify-end">
+            {placement !== "side" && onColumns && (
+              <select
+                value={columns}
+                onChange={(e) => onColumns(Number(e.target.value))}
+                aria-label="Campaign totals: trackers side by side"
+                className="bg-transparent border-0 text-xs text-mute underline cursor-pointer"
+              >
+                {[1, 2, 3, 4].map((n) => (
+                  <option key={n} value={n}>
+                    {n} across
+                  </option>
+                ))}
+              </select>
+            )}
+            <PanelPlacementMenu name="Campaign totals" value={placement} onChange={onPlace} />
+          </span>
         )
       }
     >
       <div
-        className={
+        className={placement === "side" ? "flex flex-col gap-3" : "grid gap-x-8 gap-y-6"}
+        style={
           placement === "side"
-            ? "flex flex-col gap-3"
-            : "grid gap-x-8 gap-y-6 sm:grid-cols-2 xl:grid-cols-3"
+            ? undefined
+            : {
+                // At most `columns` across, fewer when there isn't room.
+                gridTemplateColumns: `repeat(auto-fit, minmax(min(100%, max(220px, calc((100% - ${(columns - 1) * 32}px) / ${columns}))), 1fr))`,
+              }
         }
       >
       {counters.map((c) => {

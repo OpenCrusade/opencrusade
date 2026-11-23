@@ -137,6 +137,12 @@ export function CrusadePage() {
           ? (next) => updateConfigMutation.mutate({ settings: { totalsPlacement: next } })
           : undefined
       }
+      columns={crusade.settings.totalsColumns ?? 3}
+      onColumns={
+        isGm
+          ? (next) => updateConfigMutation.mutate({ settings: { totalsColumns: next } })
+          : undefined
+      }
     />
   );
 
