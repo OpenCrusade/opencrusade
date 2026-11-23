@@ -31,7 +31,8 @@ export function BattlesPage() {
   const canLog =
     attached.length >= 2 && (isGm || crusade.settings.allowPlayerBattleCreation !== false);
   const showNew = params.get("new") === "1" && canLog;
-  const closeNew = () => setParams({}, { replace: true });
+  // Closing the dialog only changes the query string: stay put.
+  const closeNew = () => setParams({}, { replace: true, preventScrollReset: true });
 
   const all = [...(crusade.battles ?? [])].sort((a, b) =>
     (b.date + b.createdAt).localeCompare(a.date + a.createdAt),
