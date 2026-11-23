@@ -133,13 +133,14 @@ const openHandled = new WeakSet<Page>();
 
 /**
  * Go to a crusade page. A crusade this browser hasn't opened before
- * asks "Open this crusade?" first; press it whenever it appears.
+ * lands on "Open a crusade" with the link filled in (the e2e build
+ * uses shared-sheets access); press "Open crusade" whenever it appears.
  */
 export async function gotoCrusade(page: Page, path: string): Promise<void> {
   if (!openHandled.has(page)) {
     openHandled.add(page);
     await page.addLocatorHandler(
-      page.getByRole("button", { name: "Open this crusade" }),
+      page.getByRole("button", { name: "Open crusade", exact: true }),
       async (button) => {
         await button.click().catch(() => undefined);
       },

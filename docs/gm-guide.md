@@ -81,7 +81,7 @@ The same two steps are shown on the campaign page, under **Invite players** in t
 Each player:
 
 1. Opens the campaign link and signs in with Google.
-2. Presses **Open this crusade**.
+2. Presses **Choose from Google Drive** in the **Open a crusade** window that appears, and selects the campaign's sheet.
 3. Presses **Join crusade**. This adds their own tab to the sheet.
 4. Presses **Create my roster** to make their force.
 
