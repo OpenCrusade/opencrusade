@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useTrackerEdit } from "@/stores/tracker-edit";
 import { downloadFile } from "@/lib/export/roster-export";
@@ -57,11 +58,17 @@ export function TrackerPanel({
   wide,
   allowPlacement,
   allowColumns,
+  hideSetTools,
+  hideNotes,
   lockElsewhere,
   keep,
 }: {
   /** Offer the number of tiles across when these trackers show wide. */
   allowColumns?: boolean;
+  /** Leave out "Import or share a tracker set" (the page has its own). */
+  hideSetTools?: boolean;
+  /** Leave out the notes block. */
+  hideNotes?: boolean;
   /** Trackers the player can't remove (a GM set every player has). */
   keep?: (item: TrackerItem) => boolean;
   /** The lock button lives somewhere else on this page. */
@@ -429,12 +436,17 @@ export function TrackerPanel({
         </div>
       )}
 
-      {editing && (
+      {editing && !hideSetTools && (
         <details className="inset-panel p-3.5" data-testid="tracker-sets">
           <summary className="label-mono cursor-pointer">Import or share a tracker set</summary>
           <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 mt-3">
             <span className="text-xs text-mute leading-[1.5]">
-              Importing adds a set's trackers to the ones already here.
+              Importing adds a set's trackers to the ones already here. To
+              make a set to share, use the{" "}
+              <Link to="/tracker-sets/new" className="underline">
+                tracker set builder
+              </Link>
+              .
             </span>
             <input
               ref={setFile}
@@ -507,6 +519,7 @@ export function TrackerPanel({
         </details>
       )}
 
+      {!hideNotes && (
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
         <span className="label-mono">{noteLabel}</span>
         {canEdit ? (
@@ -527,6 +540,7 @@ export function TrackerPanel({
           <p className="text-mute text-[13px] m-0">No notes.</p>
         )}
       </div>
+      )}
     </div>
   );
 }

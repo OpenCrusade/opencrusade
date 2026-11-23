@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { Card, Seg } from "@/components/ui/kit";
 import { useSetTrackerSets } from "@/hooks/useCrusade";
@@ -244,6 +245,9 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
           <a href={`${import.meta.env.BASE_URL}example-tracker-set.json`} download className="btn-link">
             Download an example
           </a>
+          <Link to="/tracker-sets/new" className="btn-link">
+            Build a set
+          </Link>
         </div>
         <div className="flex gap-2">
           <input
