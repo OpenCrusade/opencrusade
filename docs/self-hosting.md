@@ -174,7 +174,7 @@ Use a browser profile, and a Google account, that have never used your copy.
 - [ ] **Continue with Google** is enabled. If it is greyed out with "Sign-in isn't set up on this copy of the app.", the client ID was not set at build time.
 - [ ] Signing in asks only for your email address.
 - [ ] **New crusade** asks for per-file access ("…only the specific Google Drive files you use with this app"), or for Google Sheets if you chose that. After you tick the box, a campaign is created and a spreadsheet named "OpenCrusade - …" appears in your Google account.
-- [ ] **Copy crusade link** gives a link on your domain. Opened in a second browser profile with a second account, after sharing the sheet with that account as Editor, it shows **Open this crusade?** and then lets that account join. With per-file access the second account is asked to **Choose the sheet** first, and Google's window lists it.
+- [ ] **Copy crusade link** gives a link on your domain. Opened in a second browser profile with a second account, after sharing the sheet with that account as Editor, it opens the **Open a crusade** window on the Crusades page and then lets that account join. With per-file access the second account chooses the sheet in Google's window, which lists it.
 - [ ] With per-file access, the About page says "Connected right now with: access only to the sheets you create or choose in this app."
 - [ ] Reloading a campaign page works. This checks the fallback again, on a deep link.
 - [ ] The browser console shows no Content-Security-Policy errors while you sign in and open a campaign.

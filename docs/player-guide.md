@@ -63,29 +63,25 @@ Your browser may have blocked it. Allow pop-ups for the app's site and try again
 
 ## Open the campaign and join
 
-1. Open the campaign link while signed in. The page asks **Open this crusade?**
-2. If you have not given the second permission yet, press **Allow Google Sheets**. On Google's screen, tick the box and press **Continue**.
-3. Press **Open this crusade**. Only open campaign links from people you play with.
-4. The first time, you see **Choose this crusade's sheet, once.** Press **Choose the sheet** and select the sheet in Google's window (see below).
-5. The campaign page opens with a **Join this crusade** box. Check **Your name in this crusade**. This is the name the others see.
-6. Press **Join crusade**.
+1. Open the campaign link while signed in. The **Crusades** page opens with **Choose the crusade's sheet**, the same window as pressing **Open a crusade**.
+2. If you have not given the second permission yet, the app explains it first. Press **Continue to Google**. On Google's screen, tick the box and press **Continue**.
+3. Press **Choose from Google Drive** and select the campaign's sheet (see below).
+4. The campaign page opens with a **Join this crusade** box. Check **Your name in this crusade**. This is the name the others see.
+5. Press **Join crusade**.
 
 Joining adds your tab to the sheet. It writes your name, your email address and your Google account ID into the sheet. The GM and the other players can read them.
 
 ### Choose the campaign's sheet
 
-The first time you open a campaign someone else created, you see **Choose this crusade's sheet, once.** A link alone does not let the app open the sheet; choosing it does.
+A link alone does not let the app open the sheet; choosing it in Google's window does. Google's window lists your spreadsheets, including ones shared with you. Select the campaign's sheet. Its name starts with "OpenCrusade".
 
-1. Press **Choose the sheet**.
-2. Google's window shows the campaign's sheet. Select it.
-
-You do this once for each campaign. Google remembers the choice for your account, so the campaign opens directly afterwards, on your other devices too.
+Google remembers the choice for your account, so once a campaign is on a device it opens directly from then on.
 
 If Google's window does not list the sheet, it has not been shared with the account you are signed in with. Ask your GM to share it with you as an Editor.
 
 Use an ordinary browser window for this step. Google's window can fail to load in a private window, or when the browser blocks third-party cookies.
 
-Copies of the app that ask for the wider Google Sheets permission skip this step.
+Copies of the app that ask for the wider Google Sheets permission show a **Crusade link** box instead, already filled in from the link. Press **Open crusade**.
 
 ### Open a campaign without clicking its link
 
@@ -385,7 +381,7 @@ If the battle is restored, you can press **Apply results** again.
 Your force is saved in the campaign's sheet, so you can pick it up anywhere.
 
 1. On the new device, open the campaign link and sign in with the same Google account.
-2. Allow Google Sheets if asked, then press **Open this crusade**.
+2. Allow Google Sheets if asked, then press **Choose from Google Drive** and select the campaign's sheet.
 
 Your force is brought back from the sheet. If it does not show, go to **All crusades**, then **My rosters**, and press **Restore from my crusades**.
 

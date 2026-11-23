@@ -1,6 +1,6 @@
 import { packLabel } from "@/lib/utils/stats";
-import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { SpecimenHeader } from "@/components/design/SpecimenHeader";
 import { MarginNote } from "@/components/design/MarginNote";
 import { PreConsentExplainer } from "@/components/consent/PreConsentExplainer";
@@ -29,13 +29,27 @@ export function DashboardPage() {
   const { data: crusades } = useCrusadeList();
   const join = useJoinExistingCrusade();
 
-  const [consentIntent, setConsentIntent] = useState<ConsentIntent>(null);
+  // A crusade link that isn't on this device yet lands here as
+  // ?open=<id>, and goes straight into "Open a crusade" (through
+  // Google's permission step first if it hasn't been given).
+  const [params, setParams] = useSearchParams();
+  const linkedId = params.get("open");
+  const [prefill, setPrefill] = useState(() => linkedId ?? "");
+
+  const [consentIntent, setConsentIntent] = useState<ConsentIntent>(() =>
+    linkedId && !hasSheetsScope ? "join" : null,
+  );
   // What the person was doing when they were sent to Google for
   // permission. Once it is granted, they carry straight on.
   const [afterConsent, setAfterConsent] = useState<ConsentIntent>(null);
   const [showNewForm, setShowNewForm] = useState(false);
-  const [showJoin, setShowJoin] = useState(false);
+  const [showJoin, setShowJoin] = useState(() => Boolean(linkedId) && hasSheetsScope);
   const [lastLinkId, setLastLinkId] = useState<string | null>(null);
+
+  // Tidy the address once the dialog has been opened from it.
+  useEffect(() => {
+    if (linkedId) setParams({}, { replace: true });
+  }, [linkedId, setParams]);
 
   if (!signedIn) return <Navigate to="/" replace />;
 
@@ -113,6 +127,7 @@ export function DashboardPage() {
       {joinOpen && (
         <OpenCrusadeDialog
           email={user?.email ?? ""}
+          initialLink={prefill}
           pending={join.isPending}
           error={
             join.isError
@@ -131,6 +146,7 @@ export function DashboardPage() {
             join.reset();
             setShowJoin(false);
             setAfterConsent(null);
+            setPrefill("");
           }}
         />
       )}
@@ -284,11 +300,13 @@ function Td({
 
 /**
  * Open a crusade from its link. Used by invited players (first time)
- * and by anyone on a new device. No file picker: any sheet shared with
- * the signed-in Google account opens directly.
+ * and by anyone on a new device, and where a crusade link lands when
+ * the crusade isn't on this device yet. Per-file builds choose the
+ * sheet in Google's file chooser; shared-sheets builds paste the link.
  */
 function OpenCrusadeDialog({
   email,
+  initialLink = "",
   pending,
   error,
   choose,
@@ -296,6 +314,8 @@ function OpenCrusadeDialog({
   onClose,
 }: {
   email: string;
+  /** From a crusade link: fills in the link box (shared-sheets builds). */
+  initialLink?: string;
   pending: boolean;
   error: string | null;
   /** Shown in place of the error when the sheet has to be chosen first. */
@@ -303,7 +323,7 @@ function OpenCrusadeDialog({
   onOpen: (link: string) => void;
   onClose: () => void;
 }) {
-  const [link, setLink] = useState("");
+  const [link, setLink] = useState(initialLink);
   const [browsing, setBrowsing] = useState(false);
   const [browseProblem, setBrowseProblem] = useState<string | null>(null);
   const browse = async () => {

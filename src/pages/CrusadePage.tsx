@@ -12,13 +12,8 @@ import { CampaignTotals } from "@/components/crusade/CampaignTotals";
 import { TrackerSetsCard } from "@/components/crusade/TrackerSetsCard";
 import { battleTodo, forceColour, forceName, packLabel, standings } from "@/lib/utils/stats";
 import { useAuth } from "@/hooks/useAuth";
-import { userMessage } from "@/lib/utils/user-message";
-import { ACCESS_MODE } from "@/lib/google/scopes";
-import { NoAccessError } from "@/lib/sync/sheet-store";
-import { ChooseSheet } from "@/components/crusade/ChooseSheet";
 import {
   useJoinCrusade,
-  useJoinExistingCrusade,
   useCrusade,
   useSetPlayerGroup,
   useUpdateCrusadeConfig,
@@ -83,8 +78,12 @@ export function CrusadePage() {
   }
 
   if (!crusadeId) return <NotFound />;
-  // Not on this device yet (first visit from a shared link).
-  if (!isLoading && !crusade) return <OpenSharedCrusade crusadeId={crusadeId} />;
+  // Not on this device yet (first visit from a shared link): use the
+  // same "Open a crusade" step as the Crusades page, where the person
+  // chooses the sheet themselves.
+  if (!isLoading && !crusade) {
+    return <Navigate to={`/crusades?open=${encodeURIComponent(crusadeId)}`} replace />;
+  }
 
   if (!crusade) {
     return (
@@ -1154,83 +1153,6 @@ function CopyLinkButton({
  * sheet to be shared with this account; says which is missing.
  */
 /** In "file" access mode, no access usually means "not chosen yet". */
-function needsChoosing(err: unknown): boolean {
-  return ACCESS_MODE === "file" && err instanceof NoAccessError;
-}
-
-function OpenSharedCrusade({ crusadeId }: { crusadeId: string }) {
-  const { user, hasSheetsScope, requestSheetsAccess } = useAuth();
-  const open = useJoinExistingCrusade();
-  // Opening is a deliberate step, never automatic: a link can point at
-  // any spreadsheet, including one made to look like your campaign.
-  const [agreed, setAgreed] = useState(false);
-
-  return (
-    <div className="page py-12 max-w-[70ch]">
-      <h1 className="specimen-title text-3xl [&_em]:specimen-title-em">
-        <em>{agreed && !open.isError ? "Opening crusade…" : "Open this crusade?"}</em>
-      </h1>
-      {!hasSheetsScope ? (
-        <>
-          <p className="mt-4 text-ink-2 leading-[1.55]">
-            This crusade lives in a Google Sheet. To open it, allow
-            OpenCrusade to use it. On Google's screen, tick the box; it is
-            unticked by default.
-          </p>
-          <button
-            type="button"
-            onClick={() => requestSheetsAccess()}
-            className="btn btn-primary mt-6"
-          >
-            Allow Google Sheets
-          </button>
-        </>
-      ) : open.isError && needsChoosing(open.error) ? (
-        <div className="mt-4">
-          <ChooseSheet crusadeId={crusadeId} onChosen={() => open.mutate(crusadeId)} />
-        </div>
-      ) : open.isError ? (
-        <>
-          <p role="alert" className="mt-4 border border-bad text-bad p-4 leading-[1.5]">
-            {userMessage(open.error)}
-          </p>
-          <p className="mt-4 text-mute text-sm">
-            You're signed in as{" "}
-            <strong className="font-semibold text-ink">{user?.email}</strong>.
-          </p>
-          <button
-            type="button"
-            onClick={() => open.mutate(crusadeId)}
-            className="btn mt-6"
-          >
-            Try again
-          </button>
-        </>
-      ) : !agreed ? (
-        <>
-          <p className="mt-4 text-ink-2 leading-[1.55]">
-            This link points to a crusade you haven't opened on this device.
-            Only open crusade links from people you play with: the app will
-            read the Google Sheet behind it.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setAgreed(true);
-              open.mutate(crusadeId);
-            }}
-            className="btn btn-primary mt-6"
-          >
-            Open this crusade
-          </button>
-        </>
-      ) : (
-        <p className="mt-4 label-mono">Reading the crusade's Google Sheet…</p>
-      )}
-    </div>
-  );
-}
-
 function NotFound() {
   return (
     <div className="page py-12">

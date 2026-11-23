@@ -192,7 +192,7 @@ Then test with two Google accounts that have never used your copy, in ordinary b
 1. As the first account, sign in. You should be asked only for your email address.
 2. Press **New crusade**. Google's screen should offer "See, edit, create, and delete only the specific Google Drive files you use with this app". Tick it and continue. Create the campaign.
 3. In Google Sheets, share the new spreadsheet with the second account as an Editor. Copy the campaign link from the app.
-4. As the second account, open the link, press **Open this crusade**, then **Choose the sheet**. Google's chooser should show the sheet. Select it. The campaign opens and offers **Join this crusade**.
+4. As the second account, open the link. The Crusades page opens with **Choose the crusade's sheet**. Press **Choose from Google Drive**; Google's chooser should show the sheet. Select it. The campaign opens and offers **Join this crusade**.
 5. On the **About** page, each account should show "Connected right now with: access only to the sheets you create or choose in this app."
 
 ## 11. Google's verification
@@ -211,7 +211,7 @@ Submit it from the Branding page once the app is deployed at its final address.
 ## 12. What per-file access means for the people using the app
 
 - **Creating a campaign** needs no extra step. The app can always open sheets it created for that person. The option to use an existing spreadsheet is hidden, because the app cannot open a sheet it did not create.
-- **Opening a campaign someone else created**: a link by itself gives the app nothing. The player opens the link, sees "Choose this crusade's sheet, once" and presses **Choose the sheet**. Google's chooser shows that sheet; the player selects it, and the campaign opens.
+- **Opening a campaign someone else created**: a link by itself gives the app nothing. The player opens the link, which brings up **Open a crusade**, and presses **Choose from Google Drive**. Google's chooser lists their spreadsheets, including ones shared with them; the player selects the campaign's sheet, and the campaign opens.
 - **Google remembers the choice.** It is tied to the player's Google account and your Cloud project, so the same campaign opens directly afterwards, on any device.
 - **Without a link**, **Open a crusade** on the Crusades page has a **Choose from Google Drive** button. Google's chooser lists the person's spreadsheets, including ones shared with them.
 - **If the chooser does not list the sheet**, it has not been shared with the account the player signed in with.
