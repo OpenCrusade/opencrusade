@@ -159,7 +159,7 @@ The card starts in the side column. To move it, press **Manage campaign** and us
 Once it has trackers, the card has two states.
 
 - **Locked** ("Locked: only the values change."). You can change values, such as pressing + on a number. This is the everyday state.
-- **Editing.** Press **Edit trackers** to rename, remove, move and add trackers. Press **Lock trackers** when you are done.
+- **Editing.** Press **Edit trackers** to rename, remove, move and add trackers, switch a number's **Running total** on, describe checklist options, and choose how many tiles sit side by side when the card is at the top or bottom. Press **Lock trackers** when you are done.
 
 **Campaign notes** at the bottom is free text. Use your own words.
 
@@ -172,7 +172,7 @@ The **Tracker sets for players** card gives your players ready-made trackers on 
 - A set marked **Every player** goes to each player automatically.
 - A set marked **Players choose** is offered for each player to pick.
 
-You can add a set with **Add from a file**, or paste a link to a public GitHub repository, folder or file and press **Look up**. The full steps are in [tracker sets](tracker-sets.md#add-sets-for-your-players-gm).
+You can add sets with **Add from files** (one or several files at once), or paste a link to a public GitHub repository, folder or file and press **Look up**. The full steps are in [tracker sets](tracker-sets.md#add-sets-for-your-players-gm).
 
 When every player has a set with a number tracker in it, a **Campaign totals** card adds that number up across forces and teams.
 

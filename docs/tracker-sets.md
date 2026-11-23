@@ -13,6 +13,31 @@ A tracker set holds **names and numbers only**. It is a place to keep your own t
 
 A tracker set can be imported into either panel. A GM can also hand sets to players through the campaign.
 
+## Build a set
+
+The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
+
+1. Give the set a **Name**, and optionally say who a GM would usually give it to.
+2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.
+3. Check the **Preview**: it shows the trackers at the side and full width.
+4. Press **Download the file**, or **Copy as text** to paste into a gist.
+
+You can also start from a file, a GitHub link, the trackers already on a force or campaign on this device, or a set pasted as text. Pasted text is checked as you type, and any problem is named with where it is.
+
+Numbers, ticks and text you fill in become the set's starting values. Your work is kept in this browser as a draft until you press **Start again** or clear the browser's data.
+
+## Share a set
+
+Once you have the file, pick how to hand it on. Only GMs need it: once a set is added to a campaign it is saved in the campaign's sheet, and players get it from there.
+
+| Way | How | Who can see it |
+| --- | --- | --- |
+| **The file itself** | Send the `.json` file by chat, email or a shared drive. The GM uses **Add from files**. | Only the people you send it to. |
+| **A secret gist** | On gist.github.com, paste the text from **Copy as text** and choose **Create secret gist**. Share the file's **Raw** link. | Anyone who has the link. It is not listed or searchable. |
+| **A public GitHub repository** | Put one or more files in a public repository. GMs paste the repository or folder link and tick the sets they want. | Anyone. |
+
+Whichever you choose, the set must follow [What may go in a set](#what-may-go-in-a-set).
+
 ## Add sets for your players (GM)
 
 1. Open the campaign page and press **Manage campaign**.
@@ -22,10 +47,12 @@ A tracker set can be imported into either panel. A GM can also hand sets to play
    - **Players choose**: the set is offered on each player's force page, and each player decides whether to add it. Use this for sets that only suit some forces.
 4. Add the set in one of two ways.
 
-**From a file**
+**From files**
 
-1. Press **Add from a file**.
-2. Choose the `.json` file.
+1. Press **Add from files**.
+2. Choose one or more `.json` files. Hold Ctrl (or Cmd on a Mac) to pick several.
+
+Each file becomes its own set, and every one gets the choice you made under **Who gets it**. A file that can't be read is named in the message, and the others are still added. A campaign holds up to 40 sets.
 
 **From GitHub**
 
@@ -67,6 +94,10 @@ When an **Every player** set contains a number tracker, the campaign page shows 
 
 The card starts in the side column. To move it, press **Manage campaign** and use the menu in the card's heading: **Shown at the side**, **Shown at the top** or **Shown at the bottom**. At the top or bottom it is full width, with the trackers side by side. Everyone in the campaign sees it where you put it.
 
+**Choose which numbers count.** Not every number is worth adding up across the campaign. In **Tracker sets for players**, press **Edit** beside the set and untick **In Campaign totals** beside any number to leave it out. A set file can do the same with `"totals": false`, and the tracker set builder has a **Campaign totals** switch on each number.
+
+**Columns.** At the top or bottom, a second menu in the card's heading sets how many trackers sit side by side, from 1 to 4. Fewer fit on a narrow screen.
+
 ## Use a set as a player
 
 **A set your GM gave to every player** appears in your trackers by itself the next time you open your force page. In set-up mode it is marked `From your GM, so it can't be removed.`
@@ -81,14 +112,27 @@ The card starts in the side column. To move it, press **Manage campaign** and us
 
 1. Open your force page and press **Edit trackers**.
 2. Open **Import or share a tracker set**.
-3. Press **Import from a file** and choose the file. Or paste a GitHub "Raw" link into **GitHub link to a tracker set** and press **Import**.
+3. Press **Import from files** and choose one or more files. Or paste a GitHub "Raw" link into **GitHub link to a tracker set** and press **Import**.
 4. Confirm. The new trackers are added to the ones you already have. Nothing is replaced.
 
 On a force page this link box takes a link to one file only. Looking up a whole repository is on the GM's card.
 
-**Share your own layout.** In the same section, press **Download this set**. The file keeps the tracker names, stages, list entries, option descriptions, where each tracker shows, the number of columns, running totals and notes. It leaves out your numbers and progress.
+**Share your own layout.** In the same section, press **Download this set** and give the set a name. The file keeps the tracker names, stages, list entries, option descriptions, where each tracker shows, the number of columns, running totals and notes. It leaves out your numbers and progress.
 
 **Copy another player's layout.** If you have no trackers yet and another force in the campaign does, you are offered **Copy another player's layout**. It copies the tracker names and types, starting from zero. Their values and notes are not copied.
+
+## Build a set
+
+The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
+
+1. Give the set a **Name**, and optionally say who a GM would usually give it to.
+2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.
+3. Check the **Preview**: it shows the trackers at the side and full width.
+4. Press **Download the file**, or **Copy as text** to paste into a gist.
+
+You can also start from a file, a GitHub link, the trackers already on a force or campaign on this device, or a set pasted as text. Pasted text is checked as you type, and any problem is named with where it is.
+
+Numbers, ticks and text you fill in become the set's starting values. Your work is kept in this browser as a draft until you press **Start again** or clear the browser's data.
 
 ## Links the app accepts
 
@@ -140,6 +184,7 @@ The app serves a fuller example at `example-tracker-set.json` (the **Download an
 | `options` | No | For `checklist`: the options to tick. Up to 50. Each has a `name` (1 to 200 characters) and an optional `detail` (up to 2,000 characters). |
 | `value` | No | A starting value. A whole number for `number`, `true` or `false` for `checkbox`, text (up to 2,000 characters) for `text`. Ignored for the other types. |
 | `lifetime` | No | For `number` only. `true` also keeps a running total of everything ever added, shown as "Lifetime". |
+| `totals` | No | For `number` only. `false` leaves the tracker out of the campaign page's **Campaign totals**, for numbers that only matter to each player. Leave it out to include the tracker. |
 | `placement` | No | `"side"`, `"above"` or `"below"` for this one tracker. Overrides the set's `placement`. |
 
 ### The six types

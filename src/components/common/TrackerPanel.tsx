@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useTrackerEdit } from "@/stores/tracker-edit";
 import { downloadFile } from "@/lib/export/roster-export";
@@ -5,6 +6,7 @@ import {
   exportTrackerLayout,
   fetchTrackerLayout,
   readTrackerLayoutFile,
+  readTrackerLayoutFiles,
   type TrackerLayout,
 } from "@/lib/import/tracker-layout";
 import {
@@ -56,9 +58,21 @@ export function TrackerPanel({
   show,
   wide,
   allowPlacement,
+  allowColumns,
+  hideSetTools,
+  hideNotes,
+  allowTotals,
   lockElsewhere,
   keep,
 }: {
+  /** Offer the number of tiles across when these trackers show wide. */
+  allowColumns?: boolean;
+  /** Leave out "Import or share a tracker set" (the page has its own). */
+  hideSetTools?: boolean;
+  /** Leave out the notes block. */
+  hideNotes?: boolean;
+  /** Offer "in Campaign totals" on number trackers (when building a set). */
+  allowTotals?: boolean;
   /** Trackers the player can't remove (a GM set every player has). */
   keep?: (item: TrackerItem) => boolean;
   /** The lock button lives somewhere else on this page. */
@@ -150,6 +164,31 @@ export function TrackerPanel({
     if (window.confirm(`Stop tracking "${item.name}"? Its value is deleted.`)) {
       onUpdate({ ...state, items: state.items.filter((i) => i.id !== item.id) });
     }
+  };
+
+  /** Several files at once: one question, one save, problems named by file. */
+  const importFiles = async (files: File[]) => {
+    setSetMessage(null);
+    const { sets, problems } = await readTrackerLayoutFiles(files);
+    const items = sets.flatMap((s) => s.items);
+    if (items.length === 0 && sets.every((s) => !s.note)) {
+      setSetMessage(problems.join(" ") || "Those files are empty.");
+      return;
+    }
+    const room = Math.max(0, 50 - state.items.length);
+    if (
+      !window.confirm(
+        `Add ${items.length} tracker${items.length === 1 ? "" : "s"} from ${sets.length} set${sets.length === 1 ? "" : "s"}?${state.items.length ? " The ones already here are kept." : ""}${items.length > room ? ` Only ${room} fit (50 at most).` : ""}`,
+      )
+    )
+      return;
+    const joined = [state.note, ...sets.map((s) => s.note)].filter(Boolean).join("\n\n").slice(0, 10000);
+    onUpdate({ items: [...state.items, ...items].slice(0, 50), note: joined });
+    setNote(joined);
+    setSetMessage(
+      [`Added ${Math.min(items.length, room)} tracker${items.length === 1 ? "" : "s"}.`, ...problems].join(" "),
+    );
+    edit.open();
   };
 
   const importSet = async (load: () => Promise<TrackerLayout>) => {
@@ -263,6 +302,37 @@ export function TrackerPanel({
         <button type="button" className="btn-link min-h-0 text-xs" onClick={() => renameItem(item)}>
           Rename
         </button>
+        {item.kind === "counter" && (
+          <button
+            type="button"
+            className="btn-link min-h-0 text-xs"
+            aria-pressed={typeof item.lifetime === "number"}
+            title="Also keep a total of everything ever added"
+            onClick={() =>
+              patchItem(item.id, {
+                lifetime:
+                  typeof item.lifetime === "number"
+                    ? undefined
+                    : typeof item.value === "number"
+                      ? Math.max(0, item.value)
+                      : 0,
+              })
+            }
+          >
+            {typeof item.lifetime === "number" ? "Running total: on" : "Running total: off"}
+          </button>
+        )}
+        {allowTotals && item.kind === "counter" && (
+          <button
+            type="button"
+            className="btn-link min-h-0 text-xs"
+            aria-pressed={item.totals !== false}
+            title="Whether the campaign page adds this number up across all forces"
+            onClick={() => patchItem(item.id, { totals: item.totals === false ? undefined : false })}
+          >
+            {item.totals === false ? "Campaign totals: left out" : "Campaign totals: included"}
+          </button>
+        )}
         {placementControl(item)}
         {keep?.(item) && <span>From your GM, so it can't be removed.</span>}
       </div>
@@ -381,15 +451,42 @@ export function TrackerPanel({
             group of options you tick, Checkbox for a single on or off, Text
             for a current choice.
           </span>
+          {allowColumns && state.items.length > 0 && (
+            <label className="flex items-center justify-between gap-3 text-xs text-mute">
+              <span>Tiles across when shown full width</span>
+              <select
+                value={state.items.find((i) => i.columns)?.columns ?? 2}
+                onChange={(e) =>
+                  onUpdate({
+                    ...state,
+                    items: state.items.map((i) => ({ ...i, columns: Number(e.target.value) })),
+                  })
+                }
+                aria-label="Tiles across when shown full width"
+                className="field bg-surface w-auto"
+              >
+                {[1, 2, 3, 4].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
         </div>
       )}
 
-      {editing && (
+      {editing && !hideSetTools && (
         <details className="inset-panel p-3.5" data-testid="tracker-sets">
           <summary className="label-mono cursor-pointer">Import or share a tracker set</summary>
           <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 mt-3">
             <span className="text-xs text-mute leading-[1.5]">
-              Importing adds a set's trackers to the ones already here.
+              Importing adds a set's trackers to the ones already here. To
+              make a set to share, use the{" "}
+              <Link to="/tracker-sets/new" className="underline">
+                tracker set builder
+              </Link>
+              .
             </span>
             <input
               ref={setFile}
@@ -397,28 +494,34 @@ export function TrackerPanel({
               accept=".json,application/json"
               className="sr-only"
               data-testid="tracker-set-file"
-              aria-label="Tracker set file"
+              aria-label="Tracker set files"
+              multiple
               onChange={(e) => {
-                const file = e.target.files?.[0];
+                const files = [...(e.target.files ?? [])];
                 e.target.value = "";
-                if (file) void importSet(() => readTrackerLayoutFile(file));
+                if (files.length === 1) void importSet(() => readTrackerLayoutFile(files[0]));
+                else if (files.length > 1) void importFiles(files);
               }}
             />
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn btn-sm" onClick={() => setFile.current?.click()}>
-                Import from a file
+                Import from files
               </button>
               {state.items.length > 0 && (
                 <button
                   type="button"
                   className="btn btn-sm"
-                  onClick={() =>
+                  onClick={() => {
+                    const name = window
+                      .prompt("Name this tracker set", setName || "Tracker set")
+                      ?.trim();
+                    if (!name) return;
                     downloadFile(
-                      `${(setName || "tracker-set").replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-") || "tracker-set"}.json`,
+                      `${name.replace(/[^\w\- ]+/g, "").trim().replace(/\s+/g, "-") || "tracker-set"}.json`,
                       "application/json",
-                      exportTrackerLayout(state, setName || "Tracker set"),
-                    )
-                  }
+                      exportTrackerLayout(state, name.slice(0, 200)),
+                    );
+                  }}
                 >
                   Download this set
                 </button>
@@ -458,6 +561,7 @@ export function TrackerPanel({
         </details>
       )}
 
+      {!hideNotes && (
       <div className="grid grid-cols-[minmax(0,1fr)] gap-2">
         <span className="label-mono">{noteLabel}</span>
         {canEdit ? (
@@ -478,6 +582,7 @@ export function TrackerPanel({
           <p className="text-mute text-[13px] m-0">No notes.</p>
         )}
       </div>
+      )}
     </div>
   );
 }
@@ -686,13 +791,25 @@ function ChecklistValue({
       ? item.value.options
       : [];
   const [name, setName] = useState("");
+  const [detail, setDetail] = useState("");
   const on = options.filter((o) => o.on).length;
   const add = () => {
     if (!name.trim()) return;
     onChange({
-      options: [...options, { id: crypto.randomUUID(), name: name.trim(), detail: "", on: false }],
+      options: [
+        ...options,
+        { id: crypto.randomUUID(), name: name.trim(), detail: detail.trim().slice(0, 2000), on: false },
+      ],
     });
     setName("");
+    setDetail("");
+  };
+  const describe = (id: string, current: string, optionName: string) => {
+    const next = window.prompt(`Description for "${optionName}" (leave empty for none)`, current);
+    if (next === null) return;
+    onChange({
+      options: options.map((x) => (x.id === id ? { ...x, detail: next.trim().slice(0, 2000) } : x)),
+    });
   };
   return (
     <div className="grid grid-cols-[minmax(0,1fr)] gap-1.5">
@@ -732,6 +849,16 @@ function ChecklistValue({
             {editing && (
               <button
                 type="button"
+                onClick={() => describe(o.id, o.detail, o.name)}
+                className="btn-link min-h-0 text-xs py-1.5"
+                aria-label={`Describe ${o.name}`}
+              >
+                {o.detail ? "Edit description" : "Describe"}
+              </button>
+            )}
+            {editing && (
+              <button
+                type="button"
                 onClick={() => {
                   if (window.confirm(`Remove the option "${o.name}"?`))
                     onChange({ options: options.filter((x) => x.id !== o.id) });
@@ -762,6 +889,19 @@ function ChecklistValue({
             Add
           </button>
         </div>
+      )}
+      {editing && name.trim() && (
+        <input
+          type="text"
+          value={detail}
+          onChange={(e) => setDetail(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") add();
+          }}
+          placeholder="What it means (optional)"
+          aria-label={`Description for the new option in ${item.name}`}
+          className="field"
+        />
       )}
     </div>
   );

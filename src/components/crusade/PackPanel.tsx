@@ -73,6 +73,7 @@ export function PackPanel({
       addPlaceholder="Track something (e.g. Territory held, Supplies found)"
       noteLabel="Campaign notes"
       setName="Campaign tracker"
+      allowColumns
       notePlaceholder="Summarise your pack's campaign rules or current state, in your own words."
     />
   );
