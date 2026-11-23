@@ -32,7 +32,7 @@ Once you have the file, pick how to hand it on. Only GMs need it: once a set is 
 
 | Way | How | Who can see it |
 | --- | --- | --- |
-| **The file itself** | Send the `.json` file by chat, email or a shared drive. The GM uses **Add from a file**. | Only the people you send it to. |
+| **The file itself** | Send the `.json` file by chat, email or a shared drive. The GM uses **Add from files**. | Only the people you send it to. |
 | **A secret gist** | On gist.github.com, paste the text from **Copy as text** and choose **Create secret gist**. Share the file's **Raw** link. | Anyone who has the link. It is not listed or searchable. |
 | **A public GitHub repository** | Put one or more files in a public repository. GMs paste the repository or folder link and tick the sets they want. | Anyone. |
 
@@ -47,10 +47,12 @@ Whichever you choose, the set must follow [What may go in a set](#what-may-go-in
    - **Players choose**: the set is offered on each player's force page, and each player decides whether to add it. Use this for sets that only suit some forces.
 4. Add the set in one of two ways.
 
-**From a file**
+**From files**
 
-1. Press **Add from a file**.
-2. Choose the `.json` file.
+1. Press **Add from files**.
+2. Choose one or more `.json` files. Hold Ctrl (or Cmd on a Mac) to pick several.
+
+Each file becomes its own set, and every one gets the choice you made under **Who gets it**. A file that can't be read is named in the message, and the others are still added. A campaign holds up to 40 sets.
 
 **From GitHub**
 
@@ -110,7 +112,7 @@ The card starts in the side column. To move it, press **Manage campaign** and us
 
 1. Open your force page and press **Edit trackers**.
 2. Open **Import or share a tracker set**.
-3. Press **Import from a file** and choose the file. Or paste a GitHub "Raw" link into **GitHub link to a tracker set** and press **Import**.
+3. Press **Import from files** and choose one or more files. Or paste a GitHub "Raw" link into **GitHub link to a tracker set** and press **Import**.
 4. Confirm. The new trackers are added to the ones you already have. Nothing is replaced.
 
 On a force page this link box takes a link to one file only. Looking up a whole repository is on the GM's card.

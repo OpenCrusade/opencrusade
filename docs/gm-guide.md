@@ -172,7 +172,7 @@ The **Tracker sets for players** card gives your players ready-made trackers on 
 - A set marked **Every player** goes to each player automatically.
 - A set marked **Players choose** is offered for each player to pick.
 
-You can add a set with **Add from a file**, or paste a link to a public GitHub repository, folder or file and press **Look up**. The full steps are in [tracker sets](tracker-sets.md#add-sets-for-your-players-gm).
+You can add sets with **Add from files** (one or several files at once), or paste a link to a public GitHub repository, folder or file and press **Look up**. The full steps are in [tracker sets](tracker-sets.md#add-sets-for-your-players-gm).
 
 When every player has a set with a number tracker in it, a **Campaign totals** card adds that number up across forces and teams.
 
