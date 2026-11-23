@@ -13,6 +13,31 @@ A tracker set holds **names and numbers only**. It is a place to keep your own t
 
 A tracker set can be imported into either panel. A GM can also hand sets to players through the campaign.
 
+## Build a set
+
+The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
+
+1. Give the set a **Name**, and optionally say who a GM would usually give it to.
+2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.
+3. Check the **Preview**: it shows the trackers at the side and full width.
+4. Press **Download the file**, or **Copy as text** to paste into a gist.
+
+You can also start from a file, a GitHub link, the trackers already on a force or campaign on this device, or a set pasted as text. Pasted text is checked as you type, and any problem is named with where it is.
+
+Numbers, ticks and text you fill in become the set's starting values. Your work is kept in this browser as a draft until you press **Start again** or clear the browser's data.
+
+## Share a set
+
+Once you have the file, pick how to hand it on. Only GMs need it: once a set is added to a campaign it is saved in the campaign's sheet, and players get it from there.
+
+| Way | How | Who can see it |
+| --- | --- | --- |
+| **The file itself** | Send the `.json` file by chat, email or a shared drive. The GM uses **Add from a file**. | Only the people you send it to. |
+| **A secret gist** | On gist.github.com, paste the text from **Copy as text** and choose **Create secret gist**. Share the file's **Raw** link. | Anyone who has the link. It is not listed or searchable. |
+| **A public GitHub repository** | Put one or more files in a public repository. GMs paste the repository or folder link and tick the sets they want. | Anyone. |
+
+Whichever you choose, the set must follow [What may go in a set](#what-may-go-in-a-set).
+
 ## Add sets for your players (GM)
 
 1. Open the campaign page and press **Manage campaign**.
@@ -93,19 +118,6 @@ On a force page this link box takes a link to one file only. Looking up a whole 
 **Share your own layout.** In the same section, press **Download this set** and give the set a name. The file keeps the tracker names, stages, list entries, option descriptions, where each tracker shows, the number of columns, running totals and notes. It leaves out your numbers and progress.
 
 **Copy another player's layout.** If you have no trackers yet and another force in the campaign does, you are offered **Copy another player's layout**. It copies the tracker names and types, starting from zero. Their values and notes are not copied.
-
-## Build a set
-
-The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
-
-1. Give the set a **Name**, and optionally say who a GM would usually give it to.
-2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.
-3. Check the **Preview**: it shows the trackers at the side and full width.
-4. Press **Download the file**, or **Copy as text** to paste into a gist.
-
-You can also start from a file, a GitHub link, the trackers already on a force or campaign on this device, or a set pasted as text. Pasted text is checked as you type, and any problem is named with where it is.
-
-Numbers, ticks and text you fill in become the set's starting values. Your work is kept in this browser as a draft until you press **Start again** or clear the browser's data.
 
 ## Links the app accepts
 
