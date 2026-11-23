@@ -6,6 +6,7 @@ import {
   exportTrackerLayout,
   fetchTrackerLayout,
   readTrackerLayoutFile,
+  readTrackerLayoutFiles,
   type TrackerLayout,
 } from "@/lib/import/tracker-layout";
 import {
@@ -163,6 +164,31 @@ export function TrackerPanel({
     if (window.confirm(`Stop tracking "${item.name}"? Its value is deleted.`)) {
       onUpdate({ ...state, items: state.items.filter((i) => i.id !== item.id) });
     }
+  };
+
+  /** Several files at once: one question, one save, problems named by file. */
+  const importFiles = async (files: File[]) => {
+    setSetMessage(null);
+    const { sets, problems } = await readTrackerLayoutFiles(files);
+    const items = sets.flatMap((s) => s.items);
+    if (items.length === 0 && sets.every((s) => !s.note)) {
+      setSetMessage(problems.join(" ") || "Those files are empty.");
+      return;
+    }
+    const room = Math.max(0, 50 - state.items.length);
+    if (
+      !window.confirm(
+        `Add ${items.length} tracker${items.length === 1 ? "" : "s"} from ${sets.length} set${sets.length === 1 ? "" : "s"}?${state.items.length ? " The ones already here are kept." : ""}${items.length > room ? ` Only ${room} fit (50 at most).` : ""}`,
+      )
+    )
+      return;
+    const joined = [state.note, ...sets.map((s) => s.note)].filter(Boolean).join("\n\n").slice(0, 10000);
+    onUpdate({ items: [...state.items, ...items].slice(0, 50), note: joined });
+    setNote(joined);
+    setSetMessage(
+      [`Added ${Math.min(items.length, room)} tracker${items.length === 1 ? "" : "s"}.`, ...problems].join(" "),
+    );
+    edit.open();
   };
 
   const importSet = async (load: () => Promise<TrackerLayout>) => {
@@ -468,16 +494,18 @@ export function TrackerPanel({
               accept=".json,application/json"
               className="sr-only"
               data-testid="tracker-set-file"
-              aria-label="Tracker set file"
+              aria-label="Tracker set files"
+              multiple
               onChange={(e) => {
-                const file = e.target.files?.[0];
+                const files = [...(e.target.files ?? [])];
                 e.target.value = "";
-                if (file) void importSet(() => readTrackerLayoutFile(file));
+                if (files.length === 1) void importSet(() => readTrackerLayoutFile(files[0]));
+                else if (files.length > 1) void importFiles(files);
               }}
             />
             <div className="flex flex-wrap gap-2">
               <button type="button" className="btn btn-sm" onClick={() => setFile.current?.click()}>
-                Import from a file
+                Import from files
               </button>
               {state.items.length > 0 && (
                 <button

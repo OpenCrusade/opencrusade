@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { exportTrackerLayout, parseTrackerLayout } from "@/lib/import/tracker-layout";
+import { exportTrackerLayout, parseTrackerLayout, readTrackerLayoutFiles } from "@/lib/import/tracker-layout";
 
 const SET = {
   format: "crusade-ledger-tracker",
@@ -168,5 +168,25 @@ describe("tracker sets", () => {
     expect(shared.trackers.map((t: { value?: unknown }) => t.value)).toEqual([undefined, undefined, undefined]);
     const built = JSON.parse(exportTrackerLayout(l, "S", { startValues: true }));
     expect(built.trackers.map((t: { value?: unknown }) => t.value)).toEqual([3, true, "North"]);
+  });
+
+  it("reads several files, naming any that can't be read", async () => {
+    const good = (name: string) =>
+      new File(
+        [JSON.stringify({ format: "crusade-ledger-tracker", version: 1, trackers: [{ name: "Tally", type: "number" }] })],
+        name,
+        { type: "application/json" },
+      );
+    const { sets, problems } = await readTrackerLayoutFiles([
+      good("first-set.json"),
+      new File(["not json"], "broken.json"),
+      good("second.json"),
+      new File([JSON.stringify({ format: "crusade-ledger-tracker", version: 1, trackers: [] })], "empty.json"),
+    ]);
+    expect(sets.map((s) => s.fallbackName)).toEqual(["first-set", "second"]);
+    expect(problems).toEqual([
+      "broken.json: That file isn't valid JSON.",
+      "empty.json: it has no trackers in it.",
+    ]);
   });
 });

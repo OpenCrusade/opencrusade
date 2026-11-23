@@ -305,3 +305,30 @@ export async function readTrackerLayoutFile(file: File): Promise<TrackerLayout> 
   if (file.size > MAX_BYTES) throw new Error("That file is too big to be a tracker set.");
   return parseTrackerLayout(await file.text());
 }
+
+/** At most this many files are read in one go. */
+export const MAX_FILES = 40;
+
+/**
+ * Read several tracker set files. A file that can't be read doesn't
+ * stop the others: its problem is reported with its name. `fallbackName`
+ * is the file's name without ".json", for sets that don't name themselves.
+ */
+export async function readTrackerLayoutFiles(files: File[]): Promise<{
+  sets: (TrackerLayout & { fallbackName: string })[];
+  problems: string[];
+}> {
+  const sets: (TrackerLayout & { fallbackName: string })[] = [];
+  const problems: string[] = [];
+  for (const file of files.slice(0, MAX_FILES)) {
+    try {
+      const layout = await readTrackerLayoutFile(file);
+      if (layout.items.length === 0 && !layout.note) problems.push(`${file.name}: it has no trackers in it.`);
+      else sets.push({ ...layout, fallbackName: file.name.replace(/\.json$/i, "") });
+    } catch (err) {
+      problems.push(`${file.name}: ${err instanceof Error ? err.message : String(err)}`);
+    }
+  }
+  if (files.length > MAX_FILES) problems.push(`Only the first ${MAX_FILES} files were read.`);
+  return { sets, problems };
+}
