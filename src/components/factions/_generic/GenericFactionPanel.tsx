@@ -199,6 +199,7 @@ export function GenericFactionPanel({
         setName={`${roster.factionName || "Faction"} tracker`}
         show={(i) => (i.placement ?? "side") === "side"}
         allowPlacement
+        allowColumns
         lockElsewhere
         keep={(i) => campaignSets.some((s) => i.setRef?.startsWith(`${s.id}:`))}
         notePlaceholder="Summarise your faction's Crusade rules in your own words."
