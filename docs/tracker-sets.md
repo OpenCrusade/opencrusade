@@ -119,6 +119,19 @@ On a force page this link box takes a link to one file only. Looking up a whole 
 
 **Copy another player's layout.** If you have no trackers yet and another force in the campaign does, you are offered **Copy another player's layout**. It copies the tracker names and types, starting from zero. Their values and notes are not copied.
 
+## Build a set
+
+The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
+
+1. Give the set a **Name**, and optionally say who a GM would usually give it to.
+2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.
+3. Check the **Preview**: it shows the trackers at the side and full width.
+4. Press **Download the file**, or **Copy as text** to paste into a gist.
+
+You can also start from a file, a GitHub link, the trackers already on a force or campaign on this device, or a set pasted as text. Pasted text is checked as you type, and any problem is named with where it is.
+
+Numbers, ticks and text you fill in become the set's starting values. Your work is kept in this browser as a draft until you press **Start again** or clear the browser's data.
+
 ## Links the app accepts
 
 - A link to a public repository or folder on `github.com` (GM card only).

@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ComponentType } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet, ScrollRestoration } from "react-router-dom";
 import { AppShell } from "@/components/layout/AppShell";
 import { HomePage } from "@/pages/HomePage";
 import { ErrorPage, NotFoundPage } from "@/pages/ErrorPage";
@@ -35,6 +35,16 @@ const legal = (section: "about" | "privacy" | "terms") => {
 export const router = createBrowserRouter(
   [
     {
+      // Without ScrollRestoration the browser keeps the old scroll
+      // position, so a page opened from far down a list (a unit from
+      // its roster, say) opened part-way down. Now a new page opens at
+      // the top, and Back returns to where you were.
+      element: (
+        <>
+          <ScrollRestoration />
+          <Outlet />
+        </>
+      ),
       errorElement: <ErrorPage />,
       children: [
         { path: "/", element: <HomePage /> },
