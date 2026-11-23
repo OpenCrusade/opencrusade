@@ -254,7 +254,14 @@ A **tracker** is something you count or note down: a number, a list, stages, a c
 
 **Everyday use.** While locked, you can change values: press **−** or **+**, tick a box, pick a stage, add to a list.
 
-**Set-up.** Press **Edit trackers** to rename, remove, reorder and add trackers. You can also choose where each one shows: at the side, above the squad or below the squad. Press **Lock trackers** when you are done.
+**Set-up.** Press **Edit trackers** to rename, remove, reorder and add trackers. While editing you can also:
+
+- choose where each tracker shows: at the side, above the squad or below the squad;
+- choose how many tiles sit side by side above or below the squad, under **Track something new**;
+- switch a number's **Running total** on, to also keep a total of everything ever added;
+- give a checklist option a description, with **Describe**, or when you add the option.
+
+Press **Lock trackers** when you are done.
 
 **Tracker sets** are ready-made groups of trackers.
 

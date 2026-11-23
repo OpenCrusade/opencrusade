@@ -28,6 +28,7 @@ service-account*.json
 *.bak
 *.backup*
 *.orig
+*.tmp.*
 *.swp
 *~
 

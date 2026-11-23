@@ -159,7 +159,7 @@ The card starts in the side column. To move it, press **Manage campaign** and us
 Once it has trackers, the card has two states.
 
 - **Locked** ("Locked: only the values change."). You can change values, such as pressing + on a number. This is the everyday state.
-- **Editing.** Press **Edit trackers** to rename, remove, move and add trackers. Press **Lock trackers** when you are done.
+- **Editing.** Press **Edit trackers** to rename, remove, move and add trackers, switch a number's **Running total** on, describe checklist options, and choose how many tiles sit side by side when the card is at the top or bottom. Press **Lock trackers** when you are done.
 
 **Campaign notes** at the bottom is free text. Use your own words.
 
