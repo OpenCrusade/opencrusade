@@ -177,6 +177,7 @@ export function TrackerSetBuilderPage() {
                 isSaving={false}
                 allowPlacement
                 allowColumns
+                allowTotals
                 hideSetTools
                 lockElsewhere
                 setName={draft.name}

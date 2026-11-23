@@ -16,6 +16,8 @@
  *     { "name": "Points", "type": "number" },
  *     { "name": "Resource", "type": "number", "lifetime": true },   (also shows
  *                                   a running total of everything ever added)
+ *     { "name": "Own tally", "type": "number", "totals": false },    (left out of
+ *                                   the campaign page's Campaign totals)
  *     { "name": "Campaign stage", "type": "stages", "stages": ["One", "Two"] },
  *     { "name": "Upgrades", "type": "list",
  *       "entries": [{ "name": "First", "detail": "What it does" }] },
@@ -78,6 +80,8 @@ const trackerSchema = z.object({
   lifetime: z.boolean().optional(),
   /** Where it shows on a force page: side, above or below the squad. */
   placement: z.enum(["side", "above", "below"]).optional(),
+  /** Number only: false leaves it out of the campaign's Campaign totals. */
+  totals: z.boolean().optional(),
 });
 
 const layoutSchema = z.object({
@@ -149,6 +153,7 @@ export function parseTrackerLayout(text: string): TrackerLayout {
       ...(placement && placement !== "side" ? { placement } : {}),
       ...(parsed.data.columns ? { columns: parsed.data.columns } : {}),
       ...(kind === "counter" && t.lifetime ? { lifetime: 0 } : {}),
+      ...(kind === "counter" && t.totals === false ? { totals: false } : {}),
     };
   });
   return {
@@ -202,6 +207,7 @@ export function exportTrackerLayout(
           type: KIND_TO_TYPE[i.kind],
           ...(i.placement && i.placement !== "side" ? { placement: i.placement } : {}),
           ...(typeof i.lifetime === "number" ? { lifetime: true } : {}),
+          ...(i.kind === "counter" && i.totals === false ? { totals: false } : {}),
           ...start,
         };
         if (i.value && typeof i.value === "object" && !Array.isArray(i.value)) {

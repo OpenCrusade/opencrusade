@@ -67,6 +67,10 @@ When an **Every player** set contains a number tracker, the campaign page shows 
 
 The card starts in the side column. To move it, press **Manage campaign** and use the menu in the card's heading: **Shown at the side**, **Shown at the top** or **Shown at the bottom**. At the top or bottom it is full width, with the trackers side by side. Everyone in the campaign sees it where you put it.
 
+**Choose which numbers count.** Not every number is worth adding up across the campaign. In **Tracker sets for players**, press **Edit** beside the set and untick **In Campaign totals** beside any number to leave it out. A set file can do the same with `"totals": false`, and the tracker set builder has a **Campaign totals** switch on each number.
+
+**Columns.** At the top or bottom, a second menu in the card's heading sets how many trackers sit side by side, from 1 to 4. Fewer fit on a narrow screen.
+
 ## Use a set as a player
 
 **A set your GM gave to every player** appears in your trackers by itself the next time you open your force page. In set-up mode it is marked `From your GM, so it can't be removed.`
@@ -153,6 +157,7 @@ The app serves a fuller example at `example-tracker-set.json` (the **Download an
 | `options` | No | For `checklist`: the options to tick. Up to 50. Each has a `name` (1 to 200 characters) and an optional `detail` (up to 2,000 characters). |
 | `value` | No | A starting value. A whole number for `number`, `true` or `false` for `checkbox`, text (up to 2,000 characters) for `text`. Ignored for the other types. |
 | `lifetime` | No | For `number` only. `true` also keeps a running total of everything ever added, shown as "Lifetime". |
+| `totals` | No | For `number` only. `false` leaves the tracker out of the campaign page's **Campaign totals**, for numbers that only matter to each player. Leave it out to include the tracker. |
 | `placement` | No | `"side"`, `"above"` or `"below"` for this one tracker. Overrides the set's `placement`. |
 
 ### The six types

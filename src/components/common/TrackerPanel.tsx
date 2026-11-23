@@ -60,6 +60,7 @@ export function TrackerPanel({
   allowColumns,
   hideSetTools,
   hideNotes,
+  allowTotals,
   lockElsewhere,
   keep,
 }: {
@@ -69,6 +70,8 @@ export function TrackerPanel({
   hideSetTools?: boolean;
   /** Leave out the notes block. */
   hideNotes?: boolean;
+  /** Offer "in Campaign totals" on number trackers (when building a set). */
+  allowTotals?: boolean;
   /** Trackers the player can't remove (a GM set every player has). */
   keep?: (item: TrackerItem) => boolean;
   /** The lock button lives somewhere else on this page. */
@@ -291,6 +294,17 @@ export function TrackerPanel({
             }
           >
             {typeof item.lifetime === "number" ? "Running total: on" : "Running total: off"}
+          </button>
+        )}
+        {allowTotals && item.kind === "counter" && (
+          <button
+            type="button"
+            className="btn-link min-h-0 text-xs"
+            aria-pressed={item.totals !== false}
+            title="Whether the campaign page adds this number up across all forces"
+            onClick={() => patchItem(item.id, { totals: item.totals === false ? undefined : false })}
+          >
+            {item.totals === false ? "Campaign totals: left out" : "Campaign totals: included"}
           </button>
         )}
         {placementControl(item)}
