@@ -122,6 +122,7 @@ describe("tracker sets", () => {
         { name: "Chosen", type: "checkbox", placement: "below" },
         { name: "Target", type: "text" },
         { name: "Badges", type: "checklist", options: [{ name: "A", detail: "Cost 5" }, { name: "B" }] },
+        { name: "Own tally", type: "number", totals: false },
       ],
       notes: "How it works.",
     };
@@ -145,6 +146,8 @@ describe("tracker sets", () => {
     expect(second.audience).toBe("everyone");
     expect(second.items.every((i) => i.columns === 3)).toBe(true);
     expect(second.items[0].lifetime).toBe(0);
+    expect(second.items[6].totals).toBe(false);
+    expect(second.items[0].totals).toBeUndefined();
     // A second round changes nothing at all.
     expect(exportTrackerLayout(second, second.name, { audience: second.audience })).toBe(text);
   });

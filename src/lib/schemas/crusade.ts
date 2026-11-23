@@ -26,6 +26,8 @@ export const crusadeSettingsSchema = z.object({
    * the main column.
    */
   totalsPlacement: z.enum(["side", "above", "below"]).optional(),
+  /** Trackers side by side in Campaign totals when it is full width. */
+  totalsColumns: z.number().int().min(1).max(4).optional(),
   /** Where the GM's Campaign tracker card shows. Default: the side. */
   trackerPlacement: z.enum(["side", "above", "below"]).optional(),
 });
@@ -66,6 +68,8 @@ export const packTrackerItemSchema = z.object({
   placement: z.enum(["side", "above", "below"]).optional(),
   columns: z.number().int().min(1).max(4).optional(),
   lifetime: z.number().int().optional(),
+  /** Number trackers in a GM's set: false leaves it out of Campaign totals. */
+  totals: z.boolean().optional(),
   value: z.union([
     z.number().int(),
     z.boolean(),

@@ -41,6 +41,8 @@ export interface TrackerItem {
   lifetime?: number;
   /** When shown wide: how many tiles across its group aims for. */
   columns?: number;
+  /** Number trackers in a GM's set: false leaves it out of Campaign totals. */
+  totals?: boolean;
 }
 
 interface LegacyCounter {

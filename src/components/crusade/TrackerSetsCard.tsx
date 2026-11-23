@@ -191,6 +191,31 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
                       className={`flex items-center justify-between gap-3 min-h-11 ${n > 0 ? "border-t border-rule" : ""}`}
                     >
                       <span className="truncate">{i.name}</span>
+                      {s.scope === "everyone" && i.kind === "counter" && (
+                        <label className="ml-auto flex items-center gap-2 text-xs text-mute cursor-pointer flex-none">
+                          <input
+                            type="checkbox"
+                            checked={i.totals !== false}
+                            disabled={save.isPending}
+                            onChange={(e) =>
+                              save.mutate(
+                                sets.map((x) =>
+                                  x.id === s.id
+                                    ? {
+                                        ...x,
+                                        items: x.items.map((y) =>
+                                          y.id === i.id ? { ...y, totals: e.target.checked ? undefined : false } : y,
+                                        ),
+                                        updatedAt: new Date().toISOString(),
+                                      }
+                                    : x,
+                                ),
+                              )
+                            }
+                          />
+                          In Campaign totals
+                        </label>
+                      )}
                       <button
                         type="button"
                         className="btn-link text-bad flex-none"
