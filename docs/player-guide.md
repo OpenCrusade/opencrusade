@@ -271,8 +271,9 @@ See [tracker sets](tracker-sets.md) for more.
 
 You can record a battle once at least two players have forces in the campaign. Your GM can limit recording to themselves.
 
-1. Press **Log battle**.
+1. Press **Log battle**. If your GM planned this battle in a phase, you can instead press **Record this battle** under it in the phase's box.
 2. Fill in:
+   - **Planned battle**: if the GM planned this battle, pick it. Its players and mission are filled in, and it shows as played in the phase.
    - **Mission**: pick from your GM's list if there is one, or type anything.
    - **Date**.
    - **Points level**.

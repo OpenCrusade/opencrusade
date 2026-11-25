@@ -260,7 +260,7 @@ export function CrusadePage() {
         </p>
       )}
 
-      <PhasesSection crusade={crusade} isGm={isGm} />
+      <PhasesSection crusade={crusade} isGm={isGm} me={user?.googleId} canRecord={canRecordBattle} />
 
       <div className="flex flex-wrap gap-4 items-start">
         <div className="flex-[999_1_600px] min-w-0 flex flex-col gap-4">

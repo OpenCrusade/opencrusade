@@ -219,12 +219,14 @@ describe("sheet codec", () => {
           {
             id: "b1", missionName: "Mission", date: "2026-11-18", pointsLevel: 1000,
             participants: [participant(pl, "r-pl"), participant(gm, "r-gm")],
-            createdBy: pl.googleId, createdAt: NOW, updatedAt: NOW,
+            createdBy: pl.googleId, createdAt: NOW, updatedAt: NOW, plannedId: "pb1",
           } as never,
         ],
       })),
     ).toEqual([20]);
     expect(sheet.crusade().battles[0].status).toBe("draft");
+    // the link to a planned battle survives the sheet
+    expect(sheet.crusade().battles[0].plannedId).toBe("pb1");
 
     const onBattle = (fn: (p: Crusade["battles"][0]["participants"][0]) => typeof p) =>
       (c: Crusade): Crusade => ({
@@ -291,6 +293,15 @@ describe("sheet codec", () => {
       sheet.mutate(gm.googleId, (c) => ({ ...c, settings: { allowPlayerBattleCreation: false } })),
     ).toEqual([GM_TAB_ID]);
     expect(sheet.crusade().settings.allowPlayerBattleCreation).toBe(false);
+    // planned battles live in the phases, so also only the Crusade tab
+    const planned = { id: "pb1", sides: [[gm.googleId], [pl.googleId]], mission: "", where: "Ridge", when: "", note: "" };
+    expect(
+      sheet.mutate(gm.googleId, (c) => ({
+        ...c,
+        phases: [{ id: "ph1", name: "One", text: "", start: "", end: "", planned: [planned] }],
+      }) as Crusade),
+    ).toEqual([GM_TAB_ID]);
+    expect(sheet.crusade().phases[0].planned).toEqual([planned]);
   });
 
   it("splits oversized JSON across cells and reads it back", () => {

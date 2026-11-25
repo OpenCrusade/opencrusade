@@ -22,6 +22,7 @@ export type {
   PackState,
   CrusadeTrackerSet,
   CrusadePhase,
+  PlannedBattle,
   PlayerGroup,
 } from "@/lib/schemas/crusade";
 

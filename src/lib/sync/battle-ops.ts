@@ -36,6 +36,8 @@ export interface CreateBattleInput {
   /** Google IDs of participants. Each must be a player on the crusade
    *  with an attached roster. */
   participantGoogleIds: string[];
+  /** The planned battle (in a phase) this was played for. */
+  plannedId?: string;
 }
 
 export async function createBattle(
@@ -104,6 +106,7 @@ export async function createBattle(
     createdAt: now,
     updatedAt: now,
     notes: "",
+    ...(input.plannedId ? { plannedId: input.plannedId } : {}),
   };
 
   const updated = await mutateCrusade(crusadeId, (live) => ({
