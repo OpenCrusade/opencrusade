@@ -147,6 +147,16 @@ You can plan who plays whom in each phase.
 
 Each planned battle shows **To play** until one of its players, or you, records the battle and picks it under **Planned battle**. It then shows **Played**, linked to the battle. A battle that is voided stops counting. Each planned battle has **Edit** and **Remove**.
 
+### House rules
+
+The **House rules** tab holds anything your group plays differently. Only you can change it; every player can read it. Players only see the tab once there is something on it.
+
+1. Open **House rules** and press **Write house rules** (or **Edit house rules**).
+2. Type your rules. Start a line with `#` for a heading or `-` for a bullet, put `**two stars**` round words to make them bold, and leave a blank line between paragraphs.
+3. Press **Save house rules**.
+
+To remove them, delete all the text and save. The page shows when the rules last changed. Like everything else in the campaign, they are kept in the campaign's sheet.
+
 ### Map
 
 One picture that every player sees on the campaign page.
@@ -304,7 +314,7 @@ Every player can see the same. Everyone the sheet is shared with can read all of
 
 **You can change**
 
-- Campaign settings, teams, phases, the map, the campaign tracker and tracker sets.
+- Campaign settings, teams, phases, house rules, the map, the campaign tracker and tracker sets.
 - Any player's force, after pressing **Unlock to correct**.
 - Any battle's result, and whether it is verified or voided.
 - Who is in the campaign.

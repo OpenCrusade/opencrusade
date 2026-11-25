@@ -267,6 +267,10 @@ Press **Lock trackers** when you are done.
 
 See [tracker sets](tracker-sets.md) for more.
 
+## House rules
+
+If your GM has written house rules, the campaign has a **House rules** tab. Read it before your first battle; the GM keeps it up to date and the page shows when it last changed.
+
 ## Record a battle
 
 You can record a battle once at least two players have forces in the campaign. Your GM can limit recording to themselves.

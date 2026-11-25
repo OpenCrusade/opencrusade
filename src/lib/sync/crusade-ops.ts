@@ -519,6 +519,18 @@ export async function setTrackerSets(
 }
 
 /** GM sets, replaces or (with null) removes the campaign map. */
+/** GM replaces (or, with empty text, removes) the house rules. */
+export async function setHouseRules(crusadeId: string, text: string): Promise<Crusade> {
+  return mutateCrusade(crusadeId, (live) => {
+    const { houseRules: _old, ...rest } = live;
+    void _old;
+    const trimmed = text.trim();
+    return trimmed
+      ? { ...rest, houseRules: { text: trimmed, updatedAt: new Date().toISOString() } }
+      : rest;
+  });
+}
+
 export async function setCrusadeMap(
   crusadeId: string,
   map: Crusade["map"] | null,

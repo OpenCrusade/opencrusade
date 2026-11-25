@@ -64,6 +64,9 @@ export function Header() {
                   {mine && <Tab to={`/rosters/${mine.id}`}>My force</Tab>}
                   <Tab to={`/crusades/${crusade.id}/table`}>Table</Tab>
                   <Tab to={`/crusades/${crusade.id}/battles`}>Battles</Tab>
+                  {(isGm || crusade.houseRules) && (
+                    <Tab to={`/crusades/${crusade.id}/rules`}>House rules</Tab>
+                  )}
                 </>
               ) : (
                 <>

@@ -288,6 +288,12 @@ export const gmAssignmentSchema = z.object({
  * Stored in the GM's data tab as text (a data: URL), because the
  * Sheets API cannot place a real image in a cell.
  */
+/** The campaign's house rules, written by the GM. */
+export const houseRulesSchema = z.object({
+  text: z.string().max(20000),
+  updatedAt: z.string().datetime(),
+});
+
 export const crusadeMapSchema = z.object({
   dataUrl: z.string().regex(/^data:image\/(webp|jpeg|png);base64,/).max(700_000),
   width: z.number().int().min(1),
@@ -371,6 +377,7 @@ export const crusadeSchema = z.object({
   }),
   packState: packStateSchema.default({ counters: [], items: [], note: "" }),
   map: crusadeMapSchema.optional(),
+  houseRules: houseRulesSchema.optional(),
   trackerSets: z.array(crusadeTrackerSetSchema).max(40).default([]),
   /**
    * Ids of "everyone" sets the GM has removed. Each player's app drops
@@ -394,6 +401,7 @@ export type PackCounter = z.infer<typeof packCounterSchema>;
 export type PackTrackerItem = z.infer<typeof packTrackerItemSchema>;
 export type PackState = z.infer<typeof packStateSchema>;
 export type CrusadeMap = z.infer<typeof crusadeMapSchema>;
+export type HouseRules = z.infer<typeof houseRulesSchema>;
 export type CrusadeTrackerSet = z.infer<typeof crusadeTrackerSetSchema>;
 export type CrusadePhase = z.infer<typeof crusadePhaseSchema>;
 export type PlannedBattle = z.infer<typeof plannedBattleSchema>;

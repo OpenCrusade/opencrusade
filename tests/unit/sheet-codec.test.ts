@@ -304,6 +304,20 @@ describe("sheet codec", () => {
     expect(sheet.crusade().phases[0].planned).toEqual([planned]);
   });
 
+  it("house rules are their own row in the Crusade tab, and can be removed", () => {
+    const sheet = seed();
+    const houseRules = { text: "# Painting\nPaint everything.", updatedAt: NOW };
+    expect(sheet.mutate(gm.googleId, (c) => ({ ...c, houseRules }))).toEqual([GM_TAB_ID]);
+    expect(sheet.crusade().houseRules).toEqual(houseRules);
+    expect(sheet.rows.get(GM_TAB_ID)!.some((r) => r[0] === "rules")).toBe(true);
+    sheet.mutate(gm.googleId, (c) => {
+      const { houseRules: _h, ...rest } = c;
+      void _h;
+      return rest as Crusade;
+    });
+    expect(sheet.crusade().houseRules).toBeUndefined();
+  });
+
   it("splits oversized JSON across cells and reads it back", () => {
     const sheet = seed();
     const note = "x".repeat(9_000);

@@ -58,6 +58,7 @@ export const router = createBrowserRouter(
           children: [
             { path: "/crusades", element: page(() => import("@/pages/DashboardPage"), "DashboardPage") },
             { path: "/crusades/:crusadeId", element: page(() => import("@/pages/CrusadePage"), "CrusadePage") },
+            { path: "/crusades/:crusadeId/rules", element: page(() => import("@/pages/HouseRulesPage"), "HouseRulesPage") },
             { path: "/crusades/:crusadeId/table", element: page(() => import("@/pages/TablePage"), "TablePage") },
             { path: "/crusades/:crusadeId/battles", element: page(() => import("@/pages/BattlesPage"), "BattlesPage") },
             { path: "/crusades/:crusadeId/battles/:battleId", element: page(() => import("@/pages/BattlePage"), "BattlePage") },
