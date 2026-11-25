@@ -93,6 +93,7 @@ type Kind =
   | "result"
   | "status"
   | "map"
+  | "rules"
   | "set";
 
 const KINDS = new Set<string>([
@@ -106,6 +107,7 @@ const KINDS = new Set<string>([
   "result",
   "status",
   "map",
+  "rules",
   "set",
 ]);
 
@@ -370,7 +372,7 @@ function governingOverride(
 export function assemble(snap: Snapshot): Crusade | null {
   const gmTab = snap.tabs.get(GM_TAB_ID);
   const config = gmTab?.recs.get("crusade:config")?.data as
-    | Omit<Crusade, "id" | "players" | "attachedRosters" | "gmAssignments" | "battles" | "map" | "trackerSets">
+    | Omit<Crusade, "id" | "players" | "attachedRosters" | "gmAssignments" | "battles" | "map" | "houseRules" | "trackerSets">
     | undefined;
   if (!config) return null;
 
@@ -562,10 +564,12 @@ export function assemble(snap: Snapshot): Crusade | null {
   }
   battles.sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const mapRec = gmTab?.recs.get("map:main")?.data as Crusade["map"];
+  const rulesRec = gmTab?.recs.get("rules:main")?.data as Crusade["houseRules"];
 
   return {
     ...config,
     ...(mapRec ? { map: mapRec } : {}),
+    ...(rulesRec && typeof rulesRec.text === "string" ? { houseRules: rulesRec } : {}),
     trackerSets: recsOf<CrusadeTrackerSet>(gmTab, "set").map((r) => r.data),
     id: snap.spreadsheetId,
     players,
@@ -679,6 +683,7 @@ export function disassemble(
     gmAssignments,
     battles,
     map,
+    houseRules,
     trackerSets,
     ...config
   } = crusade;
@@ -707,6 +712,18 @@ export function disassemble(
         summary: "Picture stored as text; shown by the web app.",
       }),
       data: map,
+    });
+  }
+
+  if (houseRules) {
+    put(GM_TAB_ID, {
+      kind: "rules",
+      id: "main",
+      cols: row({
+        name: "House rules",
+        summary: houseRules.text.slice(0, 500),
+      }),
+      data: houseRules,
     });
   }
 

@@ -8,6 +8,7 @@ import {
   setPlayerGroup,
   updateCrusadeConfig,
   setCrusadeMap,
+  setHouseRules,
   setTrackerSets,
   setPhases,
   updatePackState,
@@ -153,6 +154,17 @@ export function useSetTrackerSets(crusadeId: string) {
 }
 
 /** GM sets, replaces or removes the campaign map. */
+/** GM replaces (or clears) the house rules. */
+export function useSetHouseRules(crusadeId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (text: string) => setHouseRules(crusadeId, text),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["crusade", crusadeId] });
+    },
+  });
+}
+
 export function useSetCrusadeMap(crusadeId: string) {
   const queryClient = useQueryClient();
   return useMutation({
