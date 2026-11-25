@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCreateBattle } from "@/hooks/useBattle";
 import { useCrusade } from "@/hooks/useCrusade";
 import { useCrusadeMirrors } from "@/hooks/useRoster";
+import { openPlannedFor, plannedLabel, plannedPlayers } from "@/lib/utils/planned";
 import type { InlineBattle } from "@/types";
 
 /** Every battle in the crusade, newest first. /crusades/:id/battles */
@@ -119,6 +120,13 @@ export function BattlesPage() {
           attached={attached}
           meId={me}
           missionOptions={crusade.packContent?.missions ?? []}
+          planned={openPlannedFor(crusade, me, isGm).map(({ planned, phase }) => ({
+            id: planned.id,
+            label: `${plannedLabel(planned, (id) => crusade.players.find((p) => p.user.googleId === id)?.user.displayName ?? "A former player")} (${phase.name})`,
+            participantIds: plannedPlayers(planned),
+            mission: planned.mission,
+          }))}
+          initialPlannedId={params.get("planned") ?? undefined}
           onClose={closeNew}
           onSubmit={async (values) => {
             const result = await createBattle.mutateAsync(values);

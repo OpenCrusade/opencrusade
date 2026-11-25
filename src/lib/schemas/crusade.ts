@@ -258,6 +258,8 @@ export const inlineBattleSchema = z.object({
   createdAt: z.string().datetime(),
   updatedAt: z.string().datetime(),
   notes: z.string().max(10000).default(""),
+  /** The planned battle (in a phase) this battle was played for. */
+  plannedId: z.string().max(100).optional(),
 });
 
 /**
@@ -309,6 +311,21 @@ export const crusadeTrackerSetSchema = z.object({
 });
 
 /** One chapter of the campaign's story, with the dates it runs. */
+/**
+ * A battle the GM has planned for a phase: who plays whom, and
+ * optionally the mission, where and when. It counts as played once a
+ * battle recorded by one of its players (or the GM) is linked to it.
+ */
+export const plannedBattleSchema = z.object({
+  id: z.string(),
+  /** The two sides, each a list of players' Google IDs. */
+  sides: z.tuple([z.array(z.string()).max(10), z.array(z.string()).max(10)]),
+  mission: z.string().max(200).default(""),
+  where: z.string().max(200).default(""),
+  when: z.string().max(200).default(""),
+  note: z.string().max(2000).default(""),
+});
+
 export const crusadePhaseSchema = z.object({
   id: z.string(),
   name: z.string().max(200),
@@ -316,6 +333,7 @@ export const crusadePhaseSchema = z.object({
   /** ISO dates (YYYY-MM-DD); either may be blank. */
   start: z.string().max(10).default(""),
   end: z.string().max(10).default(""),
+  planned: z.array(plannedBattleSchema).max(60).optional(),
 });
 
 export const crusadeSchema = z.object({
@@ -378,6 +396,7 @@ export type PackState = z.infer<typeof packStateSchema>;
 export type CrusadeMap = z.infer<typeof crusadeMapSchema>;
 export type CrusadeTrackerSet = z.infer<typeof crusadeTrackerSetSchema>;
 export type CrusadePhase = z.infer<typeof crusadePhaseSchema>;
+export type PlannedBattle = z.infer<typeof plannedBattleSchema>;
 export type CrusadePlayerStatus = z.infer<typeof crusadePlayerStatusSchema>;
 export type CrusadePlayer = z.infer<typeof crusadePlayerSchema>;
 export type { AttachedRoster } from "./roster";

@@ -136,6 +136,17 @@ Under each phase you have **Edit**, **Move earlier** and **Remove**.
 
 When a phase has dates, the app labels it **Upcoming**, **Active** or **Ended** by itself.
 
+#### Planned battles
+
+You can plan who plays whom in each phase.
+
+1. In the phase's box, press **Plan a battle**.
+2. Tick the players on **One side** and on **The other side**. A side can have more than one player.
+3. Optionally fill in **Mission**, **Where**, **When** and **Notes**, for example a special rule for that fight.
+4. Press **Save planned battle**.
+
+Each planned battle shows **To play** until one of its players, or you, records the battle and picks it under **Planned battle**. It then shows **Played**, linked to the battle. A battle that is voided stops counting. Each planned battle has **Edit** and **Remove**.
+
 ### Map
 
 One picture that every player sees on the campaign page.

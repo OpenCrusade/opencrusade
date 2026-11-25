@@ -23,6 +23,10 @@ export interface NewBattleFormProps {
   /** GM-defined mission names (crusade settings), offered as
    *  suggestions; free text always allowed. */
   missionOptions?: string[];
+  /** Planned battles (from the phases) this person can record. */
+  planned?: { id: string; label: string; participantIds: string[]; mission: string }[];
+  /** Pre-select this planned battle (from "Record this battle"). */
+  initialPlannedId?: string;
   onClose: () => void;
   onSubmit: (values: {
     missionName: string;
@@ -30,6 +34,7 @@ export interface NewBattleFormProps {
     pointsLevel: number;
     battleSize: "Incursion" | "Strike Force" | "Onslaught" | "Custom";
     participantGoogleIds: string[];
+    plannedId?: string;
   }) => Promise<void>;
 }
 
@@ -37,19 +42,24 @@ export function NewBattleForm({
   attached,
   meId,
   missionOptions = [],
+  planned = [],
+  initialPlannedId,
   onClose,
   onSubmit,
 }: NewBattleFormProps) {
   const today = new Date().toISOString().slice(0, 10);
 
+  const start = planned.find((p) => p.id === initialPlannedId);
   const {
     register,
     handleSubmit,
+    getValues,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(newBattleSchema),
     defaultValues: {
-      missionName: "",
+      missionName: start?.mission ?? "",
       date: today,
       pointsLevel: "1000",
       battleSize: "Strike Force",
@@ -59,9 +69,20 @@ export function NewBattleForm({
   // The person recording is in the battle; they pick who they played.
   const mine = attached.filter((a) => a.player.googleId === meId);
   const others = attached.filter((a) => a.player.googleId !== meId);
-  const [includedIds, setIncludedIds] = useState<Set<string>>(
-    new Set(mine.map((a) => a.player.googleId)),
+  const attachedIds = new Set(attached.map((a) => a.player.googleId));
+  const fromPlan = (ids: string[]) => new Set(ids.filter((id) => attachedIds.has(id)));
+  const [plannedId, setPlannedId] = useState(start?.id ?? "");
+  const [includedIds, setIncludedIds] = useState<Set<string>>(() =>
+    start ? fromPlan(start.participantIds) : new Set(mine.map((a) => a.player.googleId)),
   );
+  // Picking a planned battle fills in its players and mission.
+  const choosePlanned = (id: string) => {
+    setPlannedId(id);
+    const p = planned.find((x) => x.id === id);
+    if (!p) return;
+    setIncludedIds(fromPlan(p.participantIds));
+    if (p.mission && !getValues("missionName").trim()) setValue("missionName", p.mission);
+  };
   const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -87,6 +108,7 @@ export function NewBattleForm({
         pointsLevel: Number(values.pointsLevel),
         battleSize: values.battleSize,
         participantGoogleIds: Array.from(includedIds),
+        ...(plannedId ? { plannedId } : {}),
       });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : String(err));
@@ -152,6 +174,27 @@ export function NewBattleForm({
           }}
           className="mt-10 grid gap-6"
         >
+          {planned.length > 0 && (
+            <Field
+              label="Planned battle"
+              description="If the GM planned this battle in a phase, pick it so it shows as played."
+            >
+              <select
+                value={plannedId}
+                onChange={(e) => choosePlanned(e.target.value)}
+                className="field"
+                data-testid="battle-planned"
+              >
+                <option value="">Not a planned battle</option>
+                {planned.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+
           <Field
             label="Mission"
             error={errors.missionName?.message}
@@ -163,7 +206,7 @@ export function NewBattleForm({
           >
             <input
               type="text"
-              autoFocus
+              autoFocus={planned.length === 0}
               {...register("missionName")}
               placeholder="e.g. Battle for the relay station"
               list={missionOptions.length > 0 ? "mission-options" : undefined}
