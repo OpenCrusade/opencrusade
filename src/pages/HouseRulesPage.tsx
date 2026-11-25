@@ -70,8 +70,9 @@ export function HouseRulesPage() {
             </label>
             <p className="m-0 text-mute text-[13px] leading-[1.5]">
               Start a line with # for a heading or - for a bullet. Put
-              **two stars** round words to make them bold. Leave a blank
-              line between paragraphs. Every player can read this page.
+              **two stars** round words to make them bold. Web addresses
+              become links; write [name](https://...) to show a name
+              instead. Leave a blank line between paragraphs. Every player can read this page.
               {draft.length > MAX * 0.9 && ` ${MAX - draft.length} characters left.`}
             </p>
             {save.error ? (
