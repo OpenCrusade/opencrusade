@@ -69,7 +69,9 @@ export function HouseRulesPage() {
               />
             </label>
             <p className="m-0 text-mute text-[13px] leading-[1.5]">
-              Start a line with # for a heading or - for a bullet. Put
+              Start a line with # for a heading or - for a bullet; indent a
+              bullet with two spaces, or start it with --, to put it under
+              the one above. Put
               **two stars** round words to make them bold. Web addresses
               become links; write [name](https://...) to show a name
               instead. Leave a blank line between paragraphs. Every player can read this page.
