@@ -152,7 +152,7 @@ Each planned battle shows **To play** until one of its players, or you, records 
 The **House rules** tab holds anything your group plays differently. Only you can change it; every player can read it. Players only see the tab once there is something on it.
 
 1. Open **House rules** and press **Write house rules** (or **Edit house rules**).
-2. Type your rules. Start a line with `#` for a heading or `-` for a bullet, put `**two stars**` round words to make them bold, and leave a blank line between paragraphs. Web addresses become links that open in a new tab; write `[Mission pack FAQ](https://...)` to show a name instead of the address. Only `http` and `https` addresses become links.
+2. Type your rules. Start a line with `#` for a heading or `-` for a bullet (indent a bullet with two spaces, or start it with `--`, to put it under the one above), put `**two stars**` round words to make them bold, and leave a blank line between paragraphs. Web addresses become links that open in a new tab; write `[Mission pack FAQ](https://...)` to show a name instead of the address. Only `http` and `https` addresses become links.
 3. Press **Save house rules**.
 
 To remove them, delete all the text and save. The page shows when the rules last changed. Like everything else in the campaign, they are kept in the campaign's sheet.

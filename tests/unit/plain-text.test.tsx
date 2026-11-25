@@ -44,4 +44,20 @@ describe("PlainText", () => {
     expect(container.querySelector("a")).toBeNull();
     expect(container.textContent).toContain("[click](javascript:alert(1))");
   });
+
+  it("nests indented or -- items under the item above", () => {
+    const { container } = render(
+      <PlainText text={"- Painting\n  - Fully painted: 1 RP\n-- Based: 1 more\n- Scenery\n1. Deploy\n   1. Roll off\n\t2. Place"} />,
+    );
+    const top = container.querySelector("ul")!;
+    expect([...top.children].map((li) => li.firstChild?.textContent)).toEqual(["Painting", "Scenery"]);
+    expect([...top.querySelectorAll(":scope ul li")].map((l) => l.textContent)).toEqual(["Fully painted: 1 RP", "Based: 1 more"]);
+    expect([...container.querySelectorAll("ol ol li")].map((l) => l.textContent)).toEqual(["Roll off", "Place"]);
+  });
+
+  it("treats a sub-item with nothing above it as a normal item", () => {
+    const { container } = render(<PlainText text={"Intro\n\n-- First"} />);
+    expect(container.querySelector("ul ul")).toBeNull();
+    expect(container.querySelector("ul li")?.textContent).toBe("First");
+  });
 });
