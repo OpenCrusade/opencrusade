@@ -58,6 +58,11 @@ const REFRESH_TIMEOUT_MS = 12_000;
 const FAILURE_COOLDOWN_MS = 60_000;
 
 let inFlight: Promise<boolean> | null = null;
+
+/** The tab is the one in view and its window has focus. */
+export function pageIsActive(): boolean {
+  return document.visibilityState === "visible" && document.hasFocus();
+}
 let lastFailureAt = 0;
 
 /**
@@ -67,6 +72,10 @@ let lastFailureAt = 0;
  */
 export function trySilentTokenRefresh(): Promise<boolean> {
   if (inFlight) return inFlight;
+  // Google's window would open over whatever the person is doing in
+  // another tab. Wait until they come back to this one (useAuth renews
+  // then); no cooldown, so that renewal isn't held up.
+  if (!pageIsActive()) return Promise.resolve(false);
 
   const state = useAppStore.getState();
   // Nothing to refresh into: never signed in, or Sheets never granted

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { trySilentTokenRefresh } from "@/lib/google/token-refresh";
+import { pageIsActive, trySilentTokenRefresh } from "@/lib/google/token-refresh";
+
 import { useCallback } from "react";
 import { useGoogleLogin, googleLogout } from "@react-oauth/google";
 import { useAppStore, isSignedIn, isSessionExpired } from "@/stores/app-store";
@@ -13,6 +14,9 @@ import {
 import { INCLUDE_GRANTED, SCOPE_STORAGE } from "@/lib/google/scopes";
 import { wipeLocalData } from "@/lib/device";
 import { useToasts } from "@/stores/toasts";
+
+/** Renew Google access this long before it runs out. */
+const RENEW_BEFORE_MS = 5 * 60_000;
 
 /**
  * Public auth hook. The Landing page, Header, and ConsentRouter call
@@ -54,14 +58,33 @@ export function useAuth() {
   const expiresAt = session?.expiresAt ?? 0;
   // The expiry time for which the "lapsed" timer has fired.
   const [lapsedFor, setLapsedFor] = useState(0);
+  // Never from a tab in the background: Google's window would pop up
+  // over whatever the person is doing. If the moment comes while the
+  // tab is hidden, renew when they come back to it.
   useEffect(() => {
     if (!expiresAt) return;
+    let due = false;
+    const renewIfDue = () => {
+      if (due && pageIsActive() && Date.now() > expiresAt - RENEW_BEFORE_MS) {
+        due = false;
+        void trySilentTokenRefresh();
+      }
+    };
     const now = Date.now();
     const timers = [
-      setTimeout(() => void trySilentTokenRefresh(), Math.max(0, expiresAt - now - 5 * 60_000)),
+      setTimeout(() => {
+        due = true;
+        renewIfDue();
+      }, Math.max(0, expiresAt - now - RENEW_BEFORE_MS)),
       setTimeout(() => setLapsedFor(expiresAt), Math.max(0, expiresAt - now) + 500),
     ];
-    return () => timers.forEach(clearTimeout);
+    document.addEventListener("visibilitychange", renewIfDue);
+    window.addEventListener("focus", renewIfDue);
+    return () => {
+      timers.forEach(clearTimeout);
+      document.removeEventListener("visibilitychange", renewIfDue);
+      window.removeEventListener("focus", renewIfDue);
+    };
   }, [expiresAt]);
   const expired = expiresAt > 0 && lapsedFor === expiresAt;
 
