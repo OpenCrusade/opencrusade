@@ -483,7 +483,7 @@ export function TrackerPanel({
             <span className="text-xs text-mute leading-[1.5]">
               Importing adds a set's trackers to the ones already here. To
               make a set to share, use the{" "}
-              <Link to="/tracker-sets/new" className="underline">
+              <Link to="/tracker-sets/new/" className="underline">
                 tracker set builder
               </Link>
               .

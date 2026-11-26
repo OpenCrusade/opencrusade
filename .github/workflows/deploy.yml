@@ -58,6 +58,26 @@ jobs:
             mkdir -p "dist/$p"
             cp dist/index.html "dist/$p/index.html"
           done
+      # For search engines: tell them each public page's one address (the
+      # form with a trailing slash, which Pages serves without a redirect)
+      # and list those pages. Campaign pages are private and left out.
+      # Skipped when SITE_URL isn't set, e.g. on a fork.
+      - name: Canonical addresses, sitemap and robots.txt
+        if: vars.SITE_URL != ''
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          site="${SITE_URL%/}"
+          {
+            echo '<?xml version="1.0" encoding="UTF-8"?>'
+            echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+            for p in "" privacy/ terms/ about/ faq/ tracker-sets/new/; do
+              sed -i "s#</head>#<link rel=\"canonical\" href=\"$site/$p\" /></head>#" "dist/${p}index.html"
+              echo "  <url><loc>$site/$p</loc></url>"
+            done
+            echo '</urlset>'
+          } > dist/sitemap.xml
+          printf 'User-agent: *\nAllow: /\nSitemap: %s/sitemap.xml\n' "$site" > dist/robots.txt
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
           path: dist

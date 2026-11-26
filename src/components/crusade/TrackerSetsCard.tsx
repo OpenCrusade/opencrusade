@@ -308,7 +308,7 @@ export function TrackerSetsCard({ crusade }: { crusade: Crusade }) {
           <a href={`${import.meta.env.BASE_URL}example-tracker-set.json`} download className="btn-link">
             Download an example
           </a>
-          <Link to="/tracker-sets/new" className="btn-link">
+          <Link to="/tracker-sets/new/" className="btn-link">
             Build a set
           </Link>
         </div>

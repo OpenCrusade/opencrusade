@@ -78,7 +78,7 @@ export function Header() {
                   ) : (
                     <>
                       <Tab to="/" end>Home</Tab>
-                      <Tab to="/faq">FAQ</Tab>
+                      <Tab to="/faq/">FAQ</Tab>
                     </>
                   )}
                 </>

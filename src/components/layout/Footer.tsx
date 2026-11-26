@@ -57,10 +57,10 @@ export function Footer() {
         )}
         <span className="flex flex-wrap gap-x-4 gap-y-1">
           <span>OpenCrusade is unofficial and not affiliated with Games Workshop.</span>
-          <Link to="/faq">FAQ</Link>
-          <Link to="/about">About</Link>
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/terms">Terms</Link>
+          <Link to="/faq/">FAQ</Link>
+          <Link to="/about/">About</Link>
+          <Link to="/privacy/">Privacy</Link>
+          <Link to="/terms/">Terms</Link>
         </span>
       </div>
     </footer>

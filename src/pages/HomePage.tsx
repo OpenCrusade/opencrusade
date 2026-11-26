@@ -156,11 +156,11 @@ export function HomePage() {
             </div>
             <p className="m-0 text-mute max-w-[60ch]">
               The people who run this site cannot see your campaigns. The{" "}
-              <Link className="underline" to="/faq">
+              <Link className="underline" to="/faq/">
                 FAQ
               </Link>{" "}
               and the{" "}
-              <Link className="underline" to="/privacy">
+              <Link className="underline" to="/privacy/">
                 privacy page
               </Link>{" "}
               have the details.
