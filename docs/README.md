@@ -8,7 +8,7 @@ OpenCrusade is an unofficial, fan-made tool. It is not affiliated with or endors
 
 | Guide | Who it is for | What it covers |
 | --- | --- | --- |
-| [GM guide](gm-guide.md) | The person running a campaign. No technical knowledge needed. | Creating a campaign, sharing it, managing it, correcting mistakes and deleting it. |
+| [GM guide](gm-guide.md) | The person running a campaign. No technical knowledge needed. | Creating a campaign, sharing it, managing it, correcting mistakes, version history and backups, and deleting it. |
 | [Player guide](player-guide.md) | Anyone playing in a campaign. | Signing in, joining, keeping a force, recording battles, working on more than one device or offline. |
 | [Troubleshooting](troubleshooting.md) | Players and GMs who have hit a problem. | Each message the app can show, what causes it and how to fix it. |
 | [Tracker sets](tracker-sets.md) | GMs and players who want ready-made trackers, and anyone writing a set. | What a tracker set is, how to add and use one, and the file format. |
