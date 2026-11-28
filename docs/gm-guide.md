@@ -289,6 +289,47 @@ Some advice:
 - Do not rename, delete or edit the hidden tabs. If the settings tab is edited by hand, the app may stop being able to open the campaign.
 - Do not rename or delete the readable pages either. Your copy of the app redraws them, so changes you make there are lost.
 
+## Backups and version history
+
+Google keeps a version history of every Google Sheet, including your campaign's. It is always on, and neither you nor the app can turn it off.
+
+### See or restore an earlier version
+
+1. Press **Open the Google Sheet**.
+2. Choose **File > Version history > See version history**.
+3. Pick a version from the list on the right to see the sheet as it was then.
+4. Press **Restore this version** to go back to it.
+
+Only people with edit access to the sheet can see its history.
+
+### Name versions at key moments
+
+Google may merge older versions that have no name, to save space. Named versions are kept. Name one at moments you might want to return to: the end of a phase, before you remove a player, or before you change the settings.
+
+Choose **File > Version history > Name current version** and type a name, such as "End of phase 2".
+
+The app cannot name versions for you. Google does not let apps do that for a Sheet.
+
+### Before you restore
+
+A restore puts the whole sheet back as it was: settings, phases, battles and every player's tab together. You cannot restore just one tab.
+
+Each player's device also keeps its own copy of their force. A device with a newer copy than the restored sheet keeps it, and saves it back on that player's next change. Their force then returns to how it was before the restore. To make the restored version of a force stick, that player:
+
+1. Makes sure nothing is waiting to save, and downloads a **JSON backup** of any force that is not in a campaign, because those exist only on their device.
+2. Uses **Remove my data from this device…** on the **About** page.
+3. Signs in and opens the campaign again. Their force is rebuilt from the sheet.
+
+Tell your players before you restore, and ask them not to make changes until you have finished.
+
+To fix one battle or one force, a restore is usually more than you need. [Void the battle](#void-a-battle) or [correct the player's force](#correct-a-players-force) in the app instead.
+
+### Keep a copy of your own
+
+For a snapshot you keep outside the campaign, open the sheet and choose **File > Make a copy**, or **File > Download** for a file on your computer. The copy is not connected to the app; it is a record of the campaign at that moment.
+
+A force's **JSON backup** on its force page is not a full backup. Importing it brings back the units, points and wargear, not XP, honours or battle history.
+
 ## Delete a campaign
 
 The app cannot delete files. To delete a campaign:
