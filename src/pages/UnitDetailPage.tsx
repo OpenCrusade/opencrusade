@@ -21,6 +21,7 @@ import {
 } from "@/hooks/useUnit";
 import type { UnitBasics } from "@/lib/sync/roster-ops";
 import { honourTally, unitCrusadePoints } from "@/lib/utils/crusade-points";
+import { isWarlord, wargearOnly } from "@/lib/utils/warlord";
 import type { BattleHonour, BattleScar, CrusadeCard, Rank } from "@/types";
 
 
@@ -91,7 +92,7 @@ export function UnitDetailPage() {
             <em>{unit.name}</em>
           </>
         }
-        blurb={`${unit.datasheetName}${
+        blurb={`${isWarlord(unit) ? "Warlord, " : ""}${unit.datasheetName}${
           unit.isCharacter ? ", Character" : ""
         }, ${unit.modelCount} model${
           unit.modelCount === 1 ? "" : "s"
@@ -391,12 +392,18 @@ export function UnitDetailPage() {
             )}
 
             {/* Equipment / wargear */}
-            <Section title="Equipment" meta={String(unit.equipment.length)}>
+            <Section title="Equipment" meta={String(wargearOnly(unit.equipment).length)}>
               <EquipmentEditor
-                items={unit.equipment}
+                items={wargearOnly(unit.equipment)}
                 canEdit={canEdit}
                 isSaving={updateEquipment.isPending}
-                onChange={(items) => updateEquipment.mutate(items)}
+                // An older import keeps the Warlord in the wargear list;
+                // don't lose it when the wargear is edited.
+                onChange={(items) =>
+                  updateEquipment.mutate(
+                    unit.isWarlord === undefined && isWarlord(unit) ? [...items, "Warlord"] : items,
+                  )
+                }
               />
             </Section>
 
@@ -947,6 +954,7 @@ function BasicsDialog({
   const [models, setModels] = useState(String(unit.modelCount));
   const [points, setPoints] = useState(String(unit.pointsCost));
   const [isCharacter, setIsCharacter] = useState(unit.isCharacter);
+  const [warlord, setWarlord] = useState(isWarlord(unit));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const whole = (v: string) => /^\d+$/.test(v.trim());
@@ -967,6 +975,7 @@ function BasicsDialog({
               modelCount: Number(models),
               pointsCost: Number(points),
               isCharacter,
+              isWarlord: warlord,
             });
           } catch (err) {
             setError(err instanceof Error ? err.message : String(err));
@@ -997,7 +1006,12 @@ function BasicsDialog({
           <input type="checkbox" checked={isCharacter} onChange={(e) => setIsCharacter(e.target.checked)} className="accent-accent w-4 h-4" />
           <span>This unit is a Character</span>
         </label>
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input type="checkbox" checked={warlord} onChange={(e) => setWarlord(e.target.checked)} className="accent-accent w-4 h-4" />
+          <span>This unit is the Warlord</span>
+        </label>
         <p className="m-0 text-[13px] text-mute">
+          A force has one Warlord: ticking it here takes it off any other unit.
           XP, honours, scars and battle tallies stay as they are.
         </p>
         {error && (
