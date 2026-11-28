@@ -340,6 +340,8 @@ export const crusadePhaseSchema = z.object({
   start: z.string().max(10).default(""),
   end: z.string().max(10).default(""),
   planned: z.array(plannedBattleSchema).max(60).optional(),
+  /** The GM has named a version of the sheet for the end of this phase. */
+  versionNamed: z.boolean().optional(),
 });
 
 export const crusadeSchema = z.object({
