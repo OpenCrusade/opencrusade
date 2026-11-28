@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSetPhases } from "@/hooks/useCrusade";
 import { playedAs, plannedLabel, plannedPlayers } from "@/lib/utils/planned";
+import { sheetUrl } from "@/lib/sync/sheet-store";
+import { nearEnd } from "@/lib/utils/phases";
 import type { Crusade, CrusadePhase, PlannedBattle } from "@/types";
 
 /** Where a phase stands today, from its dates. */
@@ -108,6 +110,36 @@ export function PhasesSection({
                 </div>
                 {p.text && (
                   <p className="m-0 text-ink-2 leading-[1.55] whitespace-pre-wrap">{p.text}</p>
+                )}
+                {isGm && !p.versionNamed && nearEnd(p, today) && (
+                  <div className="grid gap-2 border border-rule bg-paper-2 p-3" data-testid="version-reminder">
+                    <p className="m-0 text-[13px] leading-[1.5]">
+                      <strong>Name a version of the sheet.</strong> This phase{" "}
+                      {status === "Ended" ? "has ended" : `ends on ${showDate(p.end)}`}. In Google
+                      Sheets, choose File &gt; Version history &gt; Name current version and call it
+                      "End of {p.name}", so you can come back to this point.
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      <a
+                        href={sheetUrl(crusade.id)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-sm"
+                      >
+                        Open the Google Sheet
+                      </a>
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        disabled={save.isPending}
+                        onClick={() =>
+                          save.mutate(phases.map((x) => (x.id === p.id ? { ...x, versionNamed: true } : x)))
+                        }
+                      >
+                        Done, I've named it
+                      </button>
+                    </div>
+                  </div>
                 )}
                 {((p.planned ?? []).length > 0 || isGm) && (
                   <div className="grid gap-2 border-t border-rule pt-3" data-testid="planned-battles">

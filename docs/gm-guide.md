@@ -136,6 +136,8 @@ Under each phase you have **Edit**, **Move earlier** and **Remove**.
 
 When a phase has dates, the app labels it **Upcoming**, **Active** or **Ended** by itself.
 
+From three days before a phase's end date, its box reminds you to name a version of the sheet, so you can return to the end of that phase later (see [Backups and version history](#backups-and-version-history)). Press **Open the Google Sheet** to name it, then **Done, I've named it**. Only you see the reminder, and it needs an end date.
+
 #### Planned battles
 
 You can plan who plays whom in each phase.
@@ -195,7 +197,7 @@ The **Tracker sets for players** card gives your players ready-made trackers on 
 
 You can add sets with **Add from files** (one or several files at once), or paste a link to a public GitHub repository, folder or file and press **Look up**. The full steps are in [tracker sets](tracker-sets.md#add-sets-for-your-players-gm).
 
-When every player has a set with a number tracker in it, a **Campaign totals** card adds that number up across forces and teams.
+When every player has a set with a number tracker in it, a **Campaign totals** card adds that number up across forces and teams. Each force is listed under its team.
 
 ### Forces: rename, bless, detach
 
@@ -307,6 +309,8 @@ Only people with edit access to the sheet can see its history.
 Google may merge older versions that have no name, to save space. Named versions are kept. Name one at moments you might want to return to: the end of a phase, before you remove a player, or before you change the settings.
 
 Choose **File > Version history > Name current version** and type a name, such as "End of phase 2".
+
+If your phases have end dates, the app reminds you in the phase's box when one is close.
 
 The app cannot name versions for you. Google does not let apps do that for a Sheet.
 

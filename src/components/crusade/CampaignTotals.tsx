@@ -98,16 +98,17 @@ export function CampaignTotals({
           })
           .sort((a, b) => (b.value ?? -1) - (a.value ?? -1));
         const total = rows.reduce((n, r) => n + (r.value ?? 0), 0);
+        // Each force sits under its own team, so it can't be read as
+        // belonging to the team listed just above it.
         const teams = groups
-          .map((g) => ({
-            g,
-            total: rows
-              .filter((r) => teamOf.get(r.roster.player.googleId) === g.id)
-              .reduce((n, r) => n + (r.value ?? 0), 0),
-            members: rows.filter((r) => teamOf.get(r.roster.player.googleId) === g.id).length,
-          }))
-          .filter((t) => t.members > 0)
+          .map((g) => {
+            const members = rows.filter((r) => teamOf.get(r.roster.player.googleId) === g.id);
+            return { g, rows: members, total: members.reduce((n, r) => n + (r.value ?? 0), 0) };
+          })
+          .filter((t) => t.rows.length > 0)
           .sort((a, b) => b.total - a.total);
+        const inTeam = new Set(teams.flatMap((t) => t.rows.map((r) => r.roster.id)));
+        const noTeam = rows.filter((r) => !inTeam.has(r.roster.id));
 
         return (
           <section key={c.ref} aria-label={c.name} className="flex flex-col tnum">
@@ -124,37 +125,51 @@ export function CampaignTotals({
               </span>
             </div>
             {teams.map((t) => (
-              <div
-                key={t.g.id}
-                className="flex items-center justify-between gap-3 min-h-9 border-t border-rule font-semibold"
-              >
-                <span className="truncate">{t.g.name}</span>
-                <span>{t.total}</span>
+              <div key={t.g.id} role="group" aria-label={t.g.name} className="flex flex-col">
+                <div className="flex items-center justify-between gap-3 min-h-9 border-t border-rule font-semibold">
+                  <span className="truncate">{t.g.name}</span>
+                  <span>{t.total}</span>
+                </div>
+                {t.rows.map((r) => (
+                  <ForceRow key={r.roster.id} row={r} me={me} indent />
+                ))}
               </div>
             ))}
-            {rows.map((r) => (
-              <div
-                key={r.roster.id}
-                className="flex items-center justify-between gap-3 min-h-9 border-t border-rule"
-              >
-                <span className="flex items-center gap-2 min-w-0">
-                  <Dot colour={forceColour(r.roster)} />
-                  <span className={`truncate ${r.roster.player.googleId === me ? "font-bold" : ""}`}>
-                    {forceName(r.roster)}
-                  </span>
-                </span>
-                <span className={r.value === null ? "text-mute" : ""}>
-                  {r.value === null ? "Not set up" : r.value}
-                  {r.lifetime !== null && (
-                    <span className="text-mute text-xs"> · {r.lifetime} lifetime</span>
-                  )}
-                </span>
-              </div>
+            {noTeam.length > 0 && teams.length > 0 && (
+              <div className="flex items-center min-h-9 border-t border-rule font-semibold">No team</div>
+            )}
+            {noTeam.map((r) => (
+              <ForceRow key={r.roster.id} row={r} me={me} indent={teams.length > 0} />
             ))}
           </section>
         );
       })}
       </div>
     </Card>
+  );
+}
+
+interface TotalsRow {
+  roster: AttachedRoster;
+  value: number | null;
+  lifetime: number | null;
+}
+
+function ForceRow({ row: r, me, indent }: { row: TotalsRow; me: string | undefined; indent?: boolean }) {
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 min-h-9 border-t border-rule ${indent ? "pl-4" : ""}`}
+    >
+      <span className="flex items-center gap-2 min-w-0">
+        <Dot colour={forceColour(r.roster)} />
+        <span className={`truncate ${r.roster.player.googleId === me ? "font-bold" : ""}`}>
+          {forceName(r.roster)}
+        </span>
+      </span>
+      <span className={r.value === null ? "text-mute" : ""}>
+        {r.value === null ? "Not set up" : r.value}
+        {r.lifetime !== null && <span className="text-mute text-xs"> · {r.lifetime} lifetime</span>}
+      </span>
+    </div>
   );
 }
