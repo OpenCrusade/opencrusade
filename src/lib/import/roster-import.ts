@@ -8,8 +8,11 @@
  * plus this app's own "JSON backup" of a roster.
  *
  * Only what a crusade card needs is taken: each unit's name, points,
- * model count, whether it is a Character, and its wargear names. No
- * rules or profiles are read or kept.
+ * model count, whether it is a Character, and its wargear names. When
+ * the list carries crusade progress (New Recruit's Crusade entries),
+ * that is read too: XP, battle tallies, Crusade Points, and the names
+ * of battle honours and scars, plus the Order of Battle's supply limit
+ * and requisition points. No rules or profiles are read or kept.
  */
 
 export interface ImportedUnit {
@@ -23,6 +26,32 @@ export interface ImportedUnit {
   sourceId?: string;
   /** True when the list gave the unit its own name. */
   named?: boolean;
+  /** Crusade progress, when the list records any for this unit. */
+  crusade?: ImportedProgress;
+}
+
+export interface ImportedHonour {
+  name: string;
+  type: "battle-trait" | "weapon-modification" | "crusade-relic";
+  relicTier?: "artificer" | "antiquity" | "legendary";
+  /** Crusade Points the list gives a relic (0 to 3). */
+  relicCrusadePoints?: number;
+}
+
+export interface ImportedProgress {
+  experiencePoints: number;
+  crusadePoints: number;
+  battlesPlayed: number;
+  battlesSurvived: number;
+  enemiesDestroyed: number;
+  honours: ImportedHonour[];
+  scars: string[];
+}
+
+/** The list's Order of Battle, when it has one. */
+export interface ImportedOrderOfBattle {
+  supplyLimit?: number;
+  requisitionPoints?: number;
 }
 
 export interface ImportedRoster {
@@ -31,6 +60,7 @@ export interface ImportedRoster {
   factionName: string;
   units: ImportedUnit[];
   points: number;
+  orderOfBattle?: ImportedOrderOfBattle;
 }
 
 /** A roster node, whichever format it came from. */
@@ -39,6 +69,8 @@ interface Node {
   name: string;
   customName: string;
   type: string;
+  /** The entry group it was picked from, e.g. "Crusade::Battle Tallies". */
+  group: string;
   number: number;
   costs: { name: string; value: number }[];
   categories: string[];
@@ -62,6 +94,7 @@ function nodeFromJson(j: Json): Node {
     name: str(j.name),
     customName: str(j.customName),
     type: str(j.type),
+    group: str(j.group),
     number: num(j.number, 1),
     costs: arr(j.costs).map((c) => ({ name: str(c.name), value: num(c.value) })),
     categories: arr(j.categories).map((c) => str(c.name)),
@@ -87,6 +120,7 @@ function nodeFromXml(el: Element): Node {
     name: el.getAttribute("name") ?? "",
     customName: el.getAttribute("customName") ?? "",
     type: el.getAttribute("type") ?? "",
+    group: el.getAttribute("group") ?? "",
     number: num(el.getAttribute("number"), 1),
     costs: childList(el, "costs", "cost").map((c) => ({
       name: c.getAttribute("name") ?? "",
@@ -111,8 +145,12 @@ function models(n: Node): number {
   return own + n.selections.reduce((s, c) => s + models(c), 0);
 }
 
+/** A Crusade entry (XP, tallies, honours, scars), not wargear. */
+const isCrusadeEntry = (n: Node) => /^crusade(::|$)/i.test(n.group.trim());
+
 function wargear(n: Node, out: Map<string, number>): void {
   for (const c of n.selections) {
+    if (isCrusadeEntry(c)) continue;
     if (c.type === "upgrade" && c.selections.length === 0 && c.name) {
       out.set(c.name, (out.get(c.name) ?? 0) + Math.max(1, c.number));
     }
@@ -120,14 +158,87 @@ function wargear(n: Node, out: Map<string, number>): void {
   }
 }
 
+/** A cost on a node by name, e.g. "Crusade Points". */
+function cost(n: Node, name: RegExp): number {
+  return n.costs.filter((c) => name.test(c.name.trim())).reduce((s, c) => s + c.value, 0);
+}
+
+/** Every Crusade entry under a unit (they sit on the unit, or on its models). */
+function crusadeEntries(n: Node, out: Node[] = []): Node[] {
+  for (const c of n.selections) {
+    if (isCrusadeEntry(c)) out.push(c);
+    else crusadeEntries(c, out);
+  }
+  return out;
+}
+
+const count = (n: Node) => Math.max(0, Math.round(n.number));
+
+function progress(n: Node): ImportedProgress | undefined {
+  const entries = crusadeEntries(n);
+  if (entries.length === 0) return undefined;
+  const p: ImportedProgress = {
+    experiencePoints: 0,
+    crusadePoints: 0,
+    battlesPlayed: 0,
+    battlesSurvived: 0,
+    enemiesDestroyed: 0,
+    honours: [],
+    scars: [],
+  };
+  for (const e of entries) {
+    const path = e.group.toLowerCase();
+    const name = e.name.trim();
+    p.crusadePoints += cost(e, /^crusade points$/i);
+    if (/^experience points$/i.test(name)) {
+      const xp = cost(e, /experience/i);
+      p.experiencePoints += xp > 0 ? xp : count(e);
+    } else if (/^battles played$/i.test(name)) p.battlesPlayed += count(e);
+    else if (/^battles survived$/i.test(name)) p.battlesSurvived += count(e);
+    else if (/^enemy units destroyed$/i.test(name)) p.enemiesDestroyed += count(e);
+    else if (path.includes("battle scars")) p.scars.push(name.slice(0, 200));
+    else if (path.includes("battle honours")) {
+      if (path.includes("relic")) {
+        const tier = /artificer|antiquity|legendary/.exec(path)?.[0] as ImportedHonour["relicTier"];
+        const cp = Math.min(3, Math.max(0, Math.round(cost(e, /^crusade points$/i))));
+        p.honours.push({
+          name: name.slice(0, 200),
+          type: "crusade-relic",
+          ...(tier ? { relicTier: tier } : {}),
+          relicCrusadePoints: cp,
+        });
+      } else if (path.includes("weapon")) {
+        p.honours.push({ name: name.slice(0, 200), type: "weapon-modification" });
+      } else {
+        p.honours.push({ name: name.slice(0, 200), type: "battle-trait" });
+      }
+    }
+  }
+  p.crusadePoints = Math.max(0, Math.round(p.crusadePoints));
+  p.experiencePoints = Math.round(p.experiencePoints);
+  p.honours = p.honours.slice(0, 6);
+  p.scars = p.scars.slice(0, 20);
+  return p;
+}
+
+/**
+ * New Recruit adds the unit's rank to its name, e.g. "First Squad
+ * (Battle-ready)". The rank lives on the crusade card, not the name.
+ */
+const RANK_SUFFIX = /\s*\((battle-ready|blooded|battle-hardened|heroic|legendary)\)\s*$/i;
+export const withoutRank = (name: string) => name.replace(RANK_SUFFIX, "");
+
 function toUnit(n: Node): ImportedUnit {
   const gear = new Map<string, number>();
   wargear(n, gear);
+  const crusade = progress(n);
+  const datasheet = withoutRank(n.name);
   return {
-    name: (n.customName || n.name).slice(0, 200),
+    name: (n.customName || datasheet).slice(0, 200),
     ...(n.id ? { sourceId: n.id.slice(0, 200) } : {}),
     ...(n.customName ? { named: true } : {}),
-    datasheetName: n.name.slice(0, 200),
+    ...(crusade ? { crusade } : {}),
+    datasheetName: datasheet.slice(0, 200),
     pointsCost: Math.max(0, Math.round(points(n))),
     modelCount: Math.max(1, models(n)),
     isCharacter: n.categories.some((c) => /^(character|epic hero)$/i.test(c.trim())),
@@ -143,6 +254,20 @@ function tidyFaction(catalogueName: string): string {
   return (parts[parts.length - 1] ?? catalogueName).trim();
 }
 
+/** Supply limit and requisition points from the Order of Battle entry. */
+function orderOfBattle(forces: { selections: Node[] }[]): ImportedOrderOfBattle | undefined {
+  const ob = forces
+    .flatMap((f) => f.selections)
+    .find((s) => /^order of battle$/i.test(s.name.trim()) || s.categories.some((c) => /^order of battle$/i.test(c.trim())));
+  if (!ob) return undefined;
+  const out: ImportedOrderOfBattle = {};
+  for (const s of ob.selections) {
+    if (/^supply limit$/i.test(s.name.trim())) out.supplyLimit = count(s);
+    else if (/^requisition points$/i.test(s.name.trim())) out.requisitionPoints = Math.round(s.number);
+  }
+  return Object.keys(out).length ? out : undefined;
+}
+
 function fromForces(name: string, forces: { catalogueName: string; selections: Node[] }[]): ImportedRoster {
   const units = forces.flatMap((f) =>
     // Top-level "upgrade" selections are list settings (battle size,
@@ -152,11 +277,13 @@ function fromForces(name: string, forces: { catalogueName: string; selections: N
   if (units.length === 0) {
     throw new Error("That file has no units in it.");
   }
+  const ob = orderOfBattle(forces);
   return {
     name,
     factionName: tidyFaction(forces.find((f) => f.catalogueName)?.catalogueName ?? ""),
     units: units.slice(0, 200),
     points: units.reduce((s, u) => s + u.pointsCost, 0),
+    ...(ob ? { orderOfBattle: ob } : {}),
   };
 }
 
@@ -280,7 +407,8 @@ export interface ImportPlan<T extends ExistingUnit = ExistingUnit> {
   untouched: T[];
 }
 
-const same = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
+const same = (a: string, b: string) =>
+  withoutRank(a).trim().toLowerCase() === withoutRank(b).trim().toLowerCase();
 
 /**
  * Pair a list's units with the force's existing units, so a re-import

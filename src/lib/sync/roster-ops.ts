@@ -22,7 +22,12 @@ import {
   readTrackerState,
   writeTrackerState,
 } from "@/components/common/tracker-state";
-import { planImport, type ImportedUnit } from "@/lib/import/roster-import";
+import {
+  planImport,
+  type ImportedOrderOfBattle,
+  type ImportedProgress,
+  type ImportedUnit,
+} from "@/lib/import/roster-import";
 import { uuid } from "@/lib/utils/id";
 import {
   isCrusadeGone,
@@ -335,6 +340,9 @@ export interface CreateRosterInput {
   name: string;
   factionName: string;
   factionId?: string;
+  /** From an imported list's Order of Battle. */
+  supplyLimit?: number;
+  requisitionPoints?: number;
 }
 
 /**
@@ -352,8 +360,8 @@ export async function createRoster(
     factionName: input.factionName,
     ...(input.factionId ? { factionId: input.factionId } : {}),
     supplyUsed: 0,
-    supplyLimit: 1000,
-    requisitionPoints: 0,
+    supplyLimit: input.supplyLimit ?? 1000,
+    requisitionPoints: input.requisitionPoints ?? 0,
     crusadePoints: 0,
     units: [],
     requisitionLog: [],
@@ -401,7 +409,50 @@ export interface AddUnitInput {
   equipment?: string[];
   /** The unit's id in the list it was imported from. */
   sourceId?: string;
+  /** Crusade progress recorded in an imported list. */
+  crusade?: ImportedProgress;
 }
+
+/**
+ * A card's crusade fields from a list's recorded progress. Honours and
+ * scars come in by name only; their rules stay with the player.
+ */
+function progressFields(p: ImportedProgress, isCharacter: boolean, now: string) {
+  const rank = getRankForXP(p.experiencePoints, isCharacter);
+  const fromRank = ["Battle-ready", "Blooded", "Battle-hardened", "Heroic", "Legendary"].indexOf(rank);
+  return {
+    experiencePoints: Math.max(0, p.experiencePoints),
+    rank,
+    crusadePoints: p.crusadePoints,
+    battlesPlayed: p.battlesPlayed,
+    battlesSurvived: p.battlesSurvived,
+    enemiesDestroyed: p.enemiesDestroyed,
+    battleHonours: p.honours.map((h) => ({
+      id: uuid(),
+      type: h.type,
+      name: h.name,
+      rules: "",
+      source: "custom" as const,
+      ...(h.relicTier ? { relicTier: h.relicTier } : {}),
+      ...(h.type === "crusade-relic" && h.relicCrusadePoints !== undefined
+        ? { relicCrusadePointsCost: h.relicCrusadePoints }
+        : {}),
+      awardedAt: now,
+    })),
+    battleScars: p.scars.map((name) => ({ id: uuid(), name, rules: "", receivedAt: now })),
+    // Honours beyond what the rank gives (requisitions, mission
+    // rewards), so the card doesn't ask for them to be picked again.
+    ...(p.honours.length > fromRank ? { bonusHonours: Math.min(6, p.honours.length - fromRank) } : {}),
+  };
+}
+
+/** No XP, honours, scars or battles yet. */
+const hasNoProgress = (u: CrusadeCard) =>
+  u.experiencePoints === 0 &&
+  u.battlesPlayed === 0 &&
+  u.battleHonours.length === 0 &&
+  u.battleScars.length === 0 &&
+  u.appliedBattleIds.length === 0;
 
 export async function setFaction(
   rosterId: string,
@@ -447,6 +498,7 @@ function newCard(input: AddUnitInput, now: string): CrusadeCard {
     updatedAt: now,
     appliedBattleIds: [],
     appliedOoA: [],
+    ...(input.crusade ? progressFields(input.crusade, input.isCharacter, now) : {}),
   };
 }
 
@@ -457,13 +509,28 @@ export async function addUnit(
   return addUnits(rosterId, [input]);
 }
 
-/** Add several units in one save (roster import). */
+/**
+ * Add several units in one save (roster import). A list imported into
+ * a force with no units yet also brings its Order of Battle's supply
+ * limit and requisition points.
+ */
 export async function addUnits(
   rosterId: string,
   inputs: AddUnitInput[],
+  orderOfBattle?: ImportedOrderOfBattle,
 ): Promise<PlayerRoster> {
-  return editRoster(rosterId, (current) => {
+  return editRoster(rosterId, (roster) => {
     const now = new Date().toISOString();
+    let current = roster;
+    if (orderOfBattle && current.units.length === 0) {
+      current = {
+        ...current,
+        ...(orderOfBattle.supplyLimit !== undefined ? { supplyLimit: orderOfBattle.supplyLimit } : {}),
+        ...(orderOfBattle.requisitionPoints !== undefined
+          ? { requisitionPoints: orderOfBattle.requisitionPoints }
+          : {}),
+      };
+    }
     const units = [...current.units, ...inputs.map((i) => newCard(i, now))];
     if (units.length > 200) {
       throw new Error("A roster holds at most 200 units.");
@@ -504,6 +571,9 @@ export async function updateUnitsFromList(
         modelCount: list.modelCount,
         equipment: list.equipment,
         ...(list.sourceId ? { importId: list.sourceId } : {}),
+        // Progress tracked here is never overwritten; a unit with none
+        // yet takes what the list records.
+        ...(list.crusade && hasNoProgress(u) ? progressFields(list.crusade, u.isCharacter, now) : {}),
         updatedAt: now,
       };
     }),

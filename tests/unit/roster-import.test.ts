@@ -128,3 +128,86 @@ describe("roster import", () => {
     expect(() => parseRosterJson("not json")).toThrow(/couldn't be read/);
   });
 });
+
+// New Recruit's crusade export: Order of Battle, rank in the unit name,
+// and Crusade entries (XP, tallies, honours, scars) on the unit.
+const CRUSADE_ROS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<roster id="r2" name="Blue Host" xmlns="http://www.battlescribe.net/schema/rosterSchema">
+  <forces>
+    <force id="f1" name="Crusade Force" catalogueName="Group - Blue Force">
+      <selections>
+        <selection id="ob" name="Order of Battle" number="1" type="upgrade">
+          <selections>
+            <selection id="ob1" name="Invented Campaign" number="1" type="upgrade" group="Current Campaign"/>
+            <selection id="ob2" name="Supply Limit" number="1250" type="upgrade"/>
+            <selection id="ob3" name="Requisition Points" number="4" type="upgrade"/>
+          </selections>
+          <categories><category name="Order of Battle"/></categories>
+        </selection>
+        <selection id="u1" name="Commander (Blooded)" type="model" number="1">
+          <costs><cost name="pts" value="90"/></costs>
+          <categories><category name="Character"/></categories>
+          <selections>
+            <selection id="c1" name="Experience Points" number="7" type="upgrade" group="Crusade">
+              <costs><cost name="Crusade: Experience" value="7"/></costs>
+            </selection>
+            <selection id="c2" name="Battles Played" number="3" type="upgrade" group="Crusade::Battle Tallies"/>
+            <selection id="c3" name="Battles Survived" number="2" type="upgrade" group="Crusade::Battle Tallies"/>
+            <selection id="c4" name="Enemy Units Destroyed" number="4" type="upgrade" group="Crusade::Battle Tallies"/>
+            <selection id="c5" name="Steady Aim" number="1" type="upgrade" group="Crusade::Battle Honours::Battle Traits">
+              <costs><cost name="Crusade Points" value="1"/></costs>
+            </selection>
+            <selection id="c6" name="Old Banner" number="1" type="upgrade" group="Crusade::Battle Honours::Crusade Relics::Antiquity Relics">
+              <costs><cost name="Crusade Points" value="2"/></costs>
+            </selection>
+            <selection id="c7" name="Honed Blade" number="1" type="upgrade" group="Crusade::Battle Honours::Weapon Modifications">
+              <costs><cost name="Crusade Points" value="1"/></costs>
+            </selection>
+            <selection id="c8" name="Limping" number="1" type="upgrade" group="Crusade::Battle Scars">
+              <costs><cost name="Crusade Points" value="-1"/></costs>
+            </selection>
+            <selection id="w1" name="Long Rifle" number="1" type="upgrade" group="Wargear"/>
+          </selections>
+        </selection>
+        <selection id="u2" name="First Squad (Battle-ready)" type="unit" number="1">
+          <costs><cost name="pts" value="60"/></costs>
+          <selections>
+            <selection id="m1" name="Trooper" type="model" number="5"/>
+          </selections>
+        </selection>
+      </selections>
+    </force>
+  </forces>
+</roster>`;
+
+describe("crusade progress in a New Recruit list", () => {
+  const r = parseRosterXml(CRUSADE_ROS);
+
+  it("reads the Order of Battle", () => {
+    expect(r.orderOfBattle).toEqual({ supplyLimit: 1250, requisitionPoints: 4 });
+  });
+
+  it("takes the rank off unit names", () => {
+    expect(r.units.map((u) => u.datasheetName)).toEqual(["Commander", "First Squad"]);
+    expect(r.units.map((u) => u.name)).toEqual(["Commander", "First Squad"]);
+  });
+
+  it("reads XP, tallies, honours and scars, and keeps them out of wargear", () => {
+    const [cmd, squad] = r.units;
+    expect(cmd.equipment).toEqual(["Long Rifle"]);
+    expect(cmd.crusade).toEqual({
+      experiencePoints: 7,
+      crusadePoints: 3,
+      battlesPlayed: 3,
+      battlesSurvived: 2,
+      enemiesDestroyed: 4,
+      honours: [
+        { name: "Steady Aim", type: "battle-trait" },
+        { name: "Old Banner", type: "crusade-relic", relicTier: "antiquity", relicCrusadePoints: 2 },
+        { name: "Honed Blade", type: "weapon-modification" },
+      ],
+      scars: ["Limping"],
+    });
+    expect(squad.crusade).toBeUndefined();
+  });
+});

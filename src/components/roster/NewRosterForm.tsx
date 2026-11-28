@@ -14,7 +14,10 @@ type NewRosterFormValues = z.infer<typeof newRosterSchema>;
 export interface NewRosterFormProps {
   onClose: () => void;
   onSubmit: (
-    values: NewRosterFormValues & { units?: ImportedRoster["units"] },
+    values: NewRosterFormValues & {
+      units?: ImportedRoster["units"];
+      orderOfBattle?: ImportedRoster["orderOfBattle"];
+    },
   ) => Promise<void>;
   /** Set when the roster will go straight into a crusade. */
   crusadeName?: string;
@@ -49,7 +52,10 @@ export function NewRosterForm({ onClose, onSubmit, crusadeName }: NewRosterFormP
   const handleFormSubmit = async (values: NewRosterFormValues) => {
     setSubmitError(null);
     try {
-      await onSubmit({ ...values, ...(imported ? { units: imported.units } : {}) });
+      await onSubmit({
+        ...values,
+        ...(imported ? { units: imported.units, orderOfBattle: imported.orderOfBattle } : {}),
+      });
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : String(err));
     }
@@ -119,7 +125,9 @@ export function NewRosterForm({ onClose, onSubmit, crusadeName }: NewRosterFormP
             <span className="text-mute text-[13px] leading-[1.5]">
               Start from a list you built in New Recruit or BattleScribe. Export
               it as .ros, .rosz or JSON and choose the file. Unit names, points,
-              model counts and wargear come across; you can also add units by
+              model counts and wargear come across, plus crusade progress
+              recorded in New Recruit (XP, tallies, honour and scar names,
+              supply limit and requisition points). You can also add units by
               hand afterwards.
             </span>
             <input
