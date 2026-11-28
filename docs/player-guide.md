@@ -170,7 +170,9 @@ Press the arrow at the end of a row for a summary. From there:
 
 ### Edit a unit
 
-On the unit's page, press **Edit unit details** to change its name, datasheet, models, points, or whether it is a Character. XP, honours, scars and battle tallies stay as they are.
+On the unit's page, press **Edit unit details** to change its name, datasheet, models, points, whether it is a Character, or whether it is the Warlord. XP, honours, scars and battle tallies stay as they are.
+
+Your Warlord has a **Warlord** badge in the Order of Battle. A force has one Warlord, so ticking it on one unit takes it off the others. An imported list's Warlord is marked for you.
 
 The unit page also has **Notes** (saved as you type), **Equipment** (type an item and press **+ Add**) and **History**.
 

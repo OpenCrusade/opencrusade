@@ -102,6 +102,8 @@ export const crusadeCardSchema = z.object({
   equipment: z.array(z.string().max(500)).max(50),
   notes: z.string().max(10000).default(""),
   isCharacter: z.boolean(),
+  /** The force's Warlord. At most one unit per force. */
+  isWarlord: z.boolean().optional(),
   /** Legendary Veterans requisition raises the honour cap of a
    *  non-CHARACTER unit from 3 to 6. */
   honourCapRaised: z.boolean().default(false),

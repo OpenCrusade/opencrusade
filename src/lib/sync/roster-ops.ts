@@ -44,6 +44,7 @@ import {
 import { playerRosterSchema } from "@/lib/schemas/roster";
 import { getRankForXP, reachesTopRanks } from "@/lib/utils/xp";
 import { honourCap } from "@/lib/utils/crusade-points";
+import { isWarlord, wargearOnly } from "@/lib/utils/warlord";
 import { validateRelicTier } from "@/lib/utils/validation";
 import {
   CORE_REQUISITIONS,
@@ -411,6 +412,18 @@ export interface AddUnitInput {
   sourceId?: string;
   /** Crusade progress recorded in an imported list. */
   crusade?: ImportedProgress;
+  isWarlord?: boolean;
+}
+
+/** Only `keep` stays Warlord; every other unit loses the flag. */
+function oneWarlord(units: CrusadeCard[], keep: string): CrusadeCard[] {
+  return units.map((u) =>
+    u.id === keep
+      ? { ...u, isWarlord: true, equipment: wargearOnly(u.equipment) }
+      : isWarlord(u)
+        ? { ...u, isWarlord: false, equipment: wargearOnly(u.equipment) }
+        : u,
+  );
 }
 
 /**
@@ -493,6 +506,7 @@ function newCard(input: AddUnitInput, now: string): CrusadeCard {
     equipment: input.equipment ?? [],
     notes: input.notes ?? "",
     isCharacter: input.isCharacter,
+    ...(input.isWarlord ? { isWarlord: true } : {}),
     honourCapRaised: false,
     createdAt: now,
     updatedAt: now,
@@ -531,7 +545,9 @@ export async function addUnits(
           : {}),
       };
     }
-    const units = [...current.units, ...inputs.map((i) => newCard(i, now))];
+    let units = [...current.units, ...inputs.map((i) => newCard(i, now))];
+    const warlord = units.slice(current.units.length).find((u) => u.isWarlord);
+    if (warlord) units = oneWarlord(units, warlord.id);
     if (units.length > 200) {
       throw new Error("A roster holds at most 200 units.");
     }
@@ -558,7 +574,7 @@ export async function updateUnitsFromList(
   const now = new Date().toISOString();
   const plan = planImport(current.units, incoming);
   const byId = new Map(plan.updates.map((u) => [u.existing.id, u.incoming]));
-  const units = [
+  let units = [
     ...current.units.map((u) => {
       const list = byId.get(u.id);
       if (!list) return u;
@@ -579,6 +595,14 @@ export async function updateUnitsFromList(
     }),
     ...plan.additions.map((i) => newCard(i, now)),
   ];
+  // The list's Warlord, if it names one, becomes the force's Warlord.
+  const listWarlord = incoming.find((i) => i.isWarlord);
+  if (listWarlord) {
+    const paired = plan.updates.find((x) => x.incoming === listWarlord)?.existing.id;
+    const added = units.slice(current.units.length).find((u) => u.isWarlord)?.id;
+    const keep = paired ?? added;
+    if (keep) units = oneWarlord(units, keep);
+  }
   if (units.length > 200) throw new Error("A roster holds at most 200 units.");
   const updated: PlayerRoster = {
     ...current,
@@ -763,6 +787,7 @@ export interface UnitBasics {
   pointsCost: number;
   modelCount: number;
   isCharacter: boolean;
+  isWarlord?: boolean;
 }
 
 /** Change what a unit is: its name, datasheet, size and points. */
@@ -787,9 +812,18 @@ export async function updateUnitBasics(
         reachesTopRanks({ ...u, isCharacter: basics.isCharacter }),
       ),
     }));
+    let units = mapped.units;
+    if (basics.isWarlord !== undefined) {
+      units = basics.isWarlord
+        ? oneWarlord(units, unitId)
+        : units.map((u) =>
+            u.id === unitId ? { ...u, isWarlord: false, equipment: wargearOnly(u.equipment) } : u,
+          );
+    }
     return {
       ...mapped,
-      supplyUsed: mapped.units.reduce((s, u) => s + u.pointsCost, 0),
+      units,
+      supplyUsed: units.reduce((s, u) => s + u.pointsCost, 0),
     };
   });
 }

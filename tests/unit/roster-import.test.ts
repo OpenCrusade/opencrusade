@@ -166,6 +166,9 @@ const CRUSADE_ROS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
             <selection id="c8" name="Limping" number="1" type="upgrade" group="Crusade::Battle Scars">
               <costs><cost name="Crusade Points" value="-1"/></costs>
             </selection>
+            <selection id="w0" name="Warlord" number="1" type="upgrade">
+              <categories><category name="Warlord"/></categories>
+            </selection>
             <selection id="w1" name="Long Rifle" number="1" type="upgrade" group="Wargear"/>
           </selections>
         </selection>
@@ -209,5 +212,9 @@ describe("crusade progress in a New Recruit list", () => {
       scars: ["Limping"],
     });
     expect(squad.crusade).toBeUndefined();
+  });
+
+  it("reads the Warlord as a flag, not wargear", () => {
+    expect(r.units.map((u) => u.isWarlord ?? false)).toEqual([true, false]);
   });
 });

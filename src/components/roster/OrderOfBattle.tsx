@@ -4,6 +4,7 @@ import { Card, Seg } from "@/components/ui/kit";
 import { monogram } from "@/lib/utils/stats";
 import { rankProgress } from "@/lib/utils/xp";
 import { honourTally } from "@/lib/utils/crusade-points";
+import { isWarlord } from "@/lib/utils/warlord";
 import type { CrusadeCard, PlayerRoster } from "@/types";
 
 /**
@@ -130,9 +131,12 @@ function UnitRow({
           {monogram(unit.name)}
         </span>
         <span className="flex flex-col gap-px min-w-0">
-          <Link to={href} className="font-semibold text-ink no-underline hover:underline truncate">
-            {unit.name}
-          </Link>
+          <span className="flex items-center gap-2 min-w-0">
+            <Link to={href} className="font-semibold text-ink no-underline hover:underline truncate">
+              {unit.name}
+            </Link>
+            {isWarlord(unit) && <WarlordBadge />}
+          </span>
           <span className="text-xs text-mute truncate">
             {unit.datasheetName}
             {unit.isCharacter ? " · Character" : ""} · {unit.pointsCost} pts
@@ -261,5 +265,14 @@ function UnitRow({
         </div>
       )}
     </div>
+  );
+}
+
+/** Marks the force's Warlord in the Order of Battle. */
+function WarlordBadge() {
+  return (
+    <span className="chip flex-none bg-plate text-plate-ink font-semibold text-[11px]" data-testid="warlord-badge">
+      Warlord
+    </span>
   );
 }

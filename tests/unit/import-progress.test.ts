@@ -1,6 +1,7 @@
 import "fake-indexeddb/auto";
 import { describe, expect, it } from "vitest";
-import { addUnits, createRoster, updateUnitsFromList } from "@/lib/sync/roster-ops";
+import { addUnits, createRoster, updateUnitBasics, updateUnitsFromList } from "@/lib/sync/roster-ops";
+import { isWarlord, wargearOnly } from "@/lib/utils/warlord";
 import type { ImportedUnit } from "@/lib/import/roster-import";
 
 const player = { googleId: "p1", email: "player@example.com", displayName: "Player" };
@@ -75,5 +76,30 @@ describe("importing a list with crusade progress", () => {
     const after = await addUnits(roster.id, [commander], { supplyLimit: 2000, requisitionPoints: 9 });
     expect(after.supplyLimit).toBe(1000);
     expect(after.requisitionPoints).toBe(0);
+  });
+
+  it("keeps one Warlord per force", async () => {
+    const roster = await createRoster({ name: "Blue Host", factionName: "Blue Force" }, player);
+    const first = await addUnits(roster.id, [{ ...commander, isWarlord: true }]);
+    const after = await addUnits(roster.id, [{ ...commander, sourceId: "u2", name: "Captain", isWarlord: true }]);
+    expect(after.units.map((u) => [u.name, u.isWarlord])).toEqual([
+      ["Commander", false],
+      ["Captain", true],
+    ]);
+    const back = await updateUnitBasics(roster.id, first.units[0].id, {
+      name: "Commander",
+      datasheetName: "Commander",
+      pointsCost: 90,
+      modelCount: 1,
+      isCharacter: true,
+      isWarlord: true,
+    });
+    expect(back.units.map((u) => u.isWarlord)).toEqual([true, false]);
+  });
+
+  it("treats an older import's Warlord wargear entry as the Warlord", () => {
+    expect(isWarlord({ equipment: ["Long Rifle", "Warlord"] })).toBe(true);
+    expect(isWarlord({ equipment: ["Warlord"], isWarlord: false })).toBe(false);
+    expect(wargearOnly(["Long Rifle", "Warlord"])).toEqual(["Long Rifle"]);
   });
 });

@@ -28,6 +28,8 @@ export interface ImportedUnit {
   named?: boolean;
   /** Crusade progress, when the list records any for this unit. */
   crusade?: ImportedProgress;
+  /** The list makes this unit the Warlord. */
+  isWarlord?: boolean;
 }
 
 export interface ImportedHonour {
@@ -148,9 +150,17 @@ function models(n: Node): number {
 /** A Crusade entry (XP, tallies, honours, scars), not wargear. */
 const isCrusadeEntry = (n: Node) => /^crusade(::|$)/i.test(n.group.trim());
 
+/** The "Warlord" selection: a list choice, not wargear. */
+const isWarlordEntry = (n: Node) =>
+  /^warlord$/i.test(n.name.trim()) || n.categories.some((c) => /^warlord$/i.test(c.trim()));
+
+function hasWarlord(n: Node): boolean {
+  return n.selections.some((c) => (isWarlordEntry(c) && !isCrusadeEntry(c)) || (!isCrusadeEntry(c) && hasWarlord(c)));
+}
+
 function wargear(n: Node, out: Map<string, number>): void {
   for (const c of n.selections) {
-    if (isCrusadeEntry(c)) continue;
+    if (isCrusadeEntry(c) || isWarlordEntry(c)) continue;
     if (c.type === "upgrade" && c.selections.length === 0 && c.name) {
       out.set(c.name, (out.get(c.name) ?? 0) + Math.max(1, c.number));
     }
@@ -238,6 +248,7 @@ function toUnit(n: Node): ImportedUnit {
     ...(n.id ? { sourceId: n.id.slice(0, 200) } : {}),
     ...(n.customName ? { named: true } : {}),
     ...(crusade ? { crusade } : {}),
+    ...(hasWarlord(n) ? { isWarlord: true } : {}),
     datasheetName: datasheet.slice(0, 200),
     pointsCost: Math.max(0, Math.round(points(n))),
     modelCount: Math.max(1, models(n)),

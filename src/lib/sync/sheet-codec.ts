@@ -39,6 +39,7 @@ import type {
   InlineBattle,
 } from "@/types";
 import type { Cell, Row } from "@/lib/google/sheets";
+import { isWarlord, wargearOnly } from "@/lib/utils/warlord";
 
 export const OVERVIEW_TAB_ID = 1;
 export const GM_TAB_ID = 2;
@@ -607,6 +608,7 @@ function row(c: {
 /** One-line, human-readable state of a unit for the sheet. */
 function unitSummary(u: CrusadeCard): string {
   const parts: string[] = [];
+  if (isWarlord(u)) parts.push("Warlord");
   const list = (label: string, xs: { name: string }[]) => {
     if (xs.length) parts.push(`${label}: ${xs.map((x) => x.name).join(", ")}`);
   };
@@ -614,7 +616,8 @@ function unitSummary(u: CrusadeCard): string {
   list("Scars", u.battleScars);
   list("Blessings", u.blessings);
   list("Burdens", u.burdens);
-  if (u.equipment.length) parts.push(`Wargear: ${u.equipment.join(", ")}`);
+  const gear = wargearOnly(u.equipment);
+  if (gear.length) parts.push(`Wargear: ${gear.join(", ")}`);
   if (u.notes.trim()) parts.push(`Notes: ${u.notes.trim()}`);
   return parts.join(" · ").slice(0, 2000);
 }
