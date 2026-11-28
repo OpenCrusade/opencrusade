@@ -325,7 +325,7 @@ export function TrackerSetBuilderPage() {
 
         <p className="page pb-8 m-0 text-sm text-mute">
           Tracker sets hold names and numbers only. Describe things in your own words, and leave
-          rules text in your books. <Link className="underline" to="/faq">FAQ</Link>
+          rules text in your books. <Link className="underline" to="/faq/">FAQ</Link>
         </p>
       </main>
       <Footer />

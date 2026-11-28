@@ -136,7 +136,7 @@ Leave `VITE_BASE_PATH` unset.
 The repository includes a workflow, `.github/workflows/deploy.yml`, that builds the app and publishes it with GitHub Pages on every push to `main`.
 
 1. In the repository, open **Settings > Pages** and set **Source** to **GitHub Actions**. Add your custom domain there and follow GitHub's DNS instructions.
-2. Open **Settings > Secrets and variables > Actions > Variables** and add `VITE_GOOGLE_CLIENT_ID`, `VITE_GOOGLE_API_KEY` and `VITE_GOOGLE_APP_ID`. Add `VITE_CONTACT_URL` and `VITE_REPO_URL` if you use them.
+2. Open **Settings > Secrets and variables > Actions > Variables** and add `VITE_GOOGLE_CLIENT_ID`, `VITE_GOOGLE_API_KEY` and `VITE_GOOGLE_APP_ID`. Add `VITE_CONTACT_URL` and `VITE_REPO_URL` if you use them. To help search engines, also add `SITE_URL`, the site's full address (for example `https://name.github.io/your-repo/`): the workflow then gives the public pages a canonical address and publishes `sitemap.xml` and `robots.txt`.
 3. Push to `main`, or run the workflow by hand from the **Actions** tab.
 
 Add these as **variables**, not secrets. Every one of them is built into the public site, so there is nothing to hide, and the app has no secret of its own. Your `.env.local` stays on your machine and is never pushed: it is for local development and holds the test accounts' real secrets.

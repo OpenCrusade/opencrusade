@@ -15,7 +15,7 @@ A tracker set can be imported into either panel. A GM can also hand sets to play
 
 ## Build a set
 
-The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
+The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new/` on the app's site (for example `https://opencrusade.info/tracker-sets/new/`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
 
 1. Give the set a **Name**, and optionally say who a GM would usually give it to.
 2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.
@@ -123,7 +123,7 @@ On a force page this link box takes a link to one file only. Looking up a whole 
 
 ## Build a set
 
-The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new` on the app's site (for example `https://opencrusade.info/tracker-sets/new`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
+The easiest way to make a set is the **tracker set builder** at `/tracker-sets/new/` on the app's site (for example `https://opencrusade.info/tracker-sets/new/`). It is linked from the FAQ and from **Build a set** on the campaign page. You do not need to sign in, and nothing leaves your browser until you download the file.
 
 1. Give the set a **Name**, and optionally say who a GM would usually give it to.
 2. Under **Track something new**, add trackers. While adding you can choose where each one shows, how many tiles sit side by side, whether a number keeps a **Running total**, and a description for each checklist option.

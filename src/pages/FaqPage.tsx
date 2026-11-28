@@ -150,7 +150,7 @@ const GROUPS: { id: string; title: string; questions: Question[] }[] = [
         q: "How do I take the permission back?",
         a: (
           <>
-            On the <Link className="underline" to="/about">About page</Link>, press "Sign out and
+            On the <Link className="underline" to="/about/">About page</Link>, press "Sign out and
             disconnect from Google". You can also remove the app in your
             Google account, under Security, "Your connections to third-party
             apps and services". The same page shows which permission the app
@@ -181,7 +181,7 @@ const GROUPS: { id: string; title: string; questions: Question[] }[] = [
             pages with no server behind it, no database, no analytics and no
             tracking. Your browser talks to Google directly. Like any
             website, the company hosting the pages may keep ordinary access
-            logs. The <Link className="underline" to="/privacy">privacy page</Link> has the full
+            logs. The <Link className="underline" to="/privacy/">privacy page</Link> has the full
             account.
           </>
         ),
@@ -214,7 +214,7 @@ const GROUPS: { id: string; title: string; questions: Question[] }[] = [
             A copy of your campaigns and forces, so pages open quickly and
             you can work offline, and a Google sign-in that lasts about an
             hour. "Remove my data from this device" on the{" "}
-            <Link className="underline" to="/about">About page</Link> clears it and
+            <Link className="underline" to="/about/">About page</Link> clears it and
             withdraws the app's Google permission.
           </>
         ),
@@ -313,7 +313,7 @@ const GROUPS: { id: string; title: string; questions: Question[] }[] = [
             a campaign, sharing it, managing players and correcting mistakes.{" "}
             <Guide file="tracker-sets.md">Tracker sets</Guide> explains
             ready-made campaign trackers, and the{" "}
-            <Link className="underline" to="/tracker-sets/new">
+            <Link className="underline" to="/tracker-sets/new/">
               tracker set builder
             </Link>{" "}
             makes one without signing in.
@@ -422,8 +422,8 @@ export function FaqPage() {
             </section>
           ))}
           <p className="m-0 text-mute">
-            More detail: <Link className="underline" to="/privacy">Privacy</Link>, <Link className="underline" to="/terms">Terms</Link>,{" "}
-            <Link className="underline" to="/about">About</Link>.
+            More detail: <Link className="underline" to="/privacy/">Privacy</Link>, <Link className="underline" to="/terms/">Terms</Link>,{" "}
+            <Link className="underline" to="/about/">About</Link>.
           </p>
         </div>
         </div>

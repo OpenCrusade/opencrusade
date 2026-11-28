@@ -33,7 +33,7 @@ export function LegalPage({ section }: { section: Section }) {
         <PageBand title={TITLES[section]} />
         <div className="page pt-7 pb-10 grid gap-6 content-start">
         <nav aria-label="About this app" className="flex flex-wrap gap-x-5 gap-y-1 px-1">
-          <Link to="/faq">FAQ</Link>
+          <Link to="/faq/">FAQ</Link>
           {(Object.keys(TITLES) as Section[]).map((s) => (
             <Link
               key={s}
@@ -258,7 +258,7 @@ function Privacy() {
       <H>Removing your data</H>
       <P>
         <strong>From this device:</strong> use "Remove my data from this
-        device" on the <Link to="/about">About page</Link>.
+        device" on the <Link to="/about/">About page</Link>.
       </P>
       <P>
         <strong>From a campaign:</strong> ask the GM to remove you. Your rows
