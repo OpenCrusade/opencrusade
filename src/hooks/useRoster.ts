@@ -1,4 +1,4 @@
-import type { ImportedUnit } from "@/lib/import/roster-import";
+import type { ImportedOrderOfBattle, ImportedUnit } from "@/lib/import/roster-import";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getRosterByRosterId,
@@ -151,7 +151,12 @@ export function useUpdateUnitsFromList(rosterId: string) {
 export function useAddUnits(rosterId: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (inputs: AddUnitInput[]) => addUnits(rosterId, inputs),
+    mutationFn: (
+      inputs: AddUnitInput[] | { units: AddUnitInput[]; orderOfBattle?: ImportedOrderOfBattle },
+    ) =>
+      Array.isArray(inputs)
+        ? addUnits(rosterId, inputs)
+        : addUnits(rosterId, inputs.units, inputs.orderOfBattle),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["roster", rosterId] });
       queryClient.invalidateQueries({ queryKey: ["my-rosters"] });

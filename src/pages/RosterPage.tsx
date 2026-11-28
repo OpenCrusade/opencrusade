@@ -674,7 +674,10 @@ export function RosterPage() {
           busy={addUnits.isPending || updateFromList.isPending}
           onClose={() => setImportList(null)}
           onAddAll={async () => {
-            await addUnits.mutateAsync(importList.units);
+            await addUnits.mutateAsync({
+              units: importList.units,
+              orderOfBattle: importList.orderOfBattle,
+            });
             setImportMessage(`Added ${importList.units.length} units.`);
             setImportList(null);
           }}
@@ -821,7 +824,7 @@ function ImportListDialog({
           <div className="grid gap-3" data-testid="import-plan">
             <PlanGroup
               title={`Would update (${plan.updates.length})`}
-              hint="Points, models, datasheet and wargear come from the list. XP, rank, honours, scars and battle history are kept."
+              hint="Points, models, datasheet and wargear come from the list. XP, rank, honours, scars and battle history are kept; a unit with none yet takes what the list records."
               empty="No unit in the list matches one you have."
             >
               {plan.updates.map((u) => (

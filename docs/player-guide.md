@@ -116,6 +116,12 @@ The app reads these files:
 
 In the **Build a new force** dialog, press **Choose a list file** and pick the file. The app shows how many units and points it found. Unit names, points, model counts and wargear come across. No rules are read or kept.
 
+If you track your crusade in New Recruit, its progress comes across too:
+
+- each unit's XP (and so its rank), battles played and survived, and enemy units destroyed;
+- the names of its battle traits, weapon modifications, crusade relics (with their tier) and battle scars. Their rules stay in your own books; add any notes on the unit's card;
+- the Order of Battle's supply limit and requisition points, when the force has no units yet.
+
 You can also import later:
 
 1. On your force page, under **This force**, press **Import a list**.
@@ -123,7 +129,7 @@ You can also import later:
 3. If your force already has units, the app shows what the list would do: three groups headed **Would update**, **Would add as new** and **Not in the list, left as they are**.
 4. Press **Update my units** to update the matches and add the rest. Or press **Add all … as new**.
 
-Updating changes points, models, datasheet and wargear. It keeps XP, rank, honours, scars and battle history. An import never removes a unit.
+Updating changes points, models, datasheet and wargear. It keeps XP, rank, honours, scars and battle history; a unit that has none of those yet takes whatever the list records. An import never removes a unit.
 
 Units are matched by name and datasheet. Give your units names in your list builder and they will match next time.
 

@@ -548,6 +548,7 @@ export function CrusadePage() {
             const roster = await createRoster.mutateAsync({
               name: values.name ?? "",
               factionName: values.factionName,
+              ...values.orderOfBattle,
             });
             if (values.units?.length) await addUnits(roster.id, values.units);
             await attachMutation.mutateAsync({ crusadeId, rosterId: roster.id });
